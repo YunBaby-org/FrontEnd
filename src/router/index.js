@@ -1,19 +1,51 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 import Login from '../components/login/index.vue'
+import Admin from '../views/Admin.vue'
+import Home from '../views/Home.vue'
+
 Vue.use(VueRouter)
 
   const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect:{
+      name:"Setting"
+    }
+
+  },
+  {
+    path:'/home',
+    name:'Home',
+    component:Home,
+    children:[
+      {
+        path:'',
+        redirect:{
+          name:'Setting'
+        }
+      },
+      {
+        path:'/setting',
+        name:'Setting',
+        component:()=>import('../menu/setting.vue')
+      },
+      {
+        path:'/map',
+        name:'Map',
+        component:()=>import('../menu/map.vue')
+      }
+    ]
   },
   {
     path:'/login',
     name:'Login',
     component:Login
+  },
+  {
+    path:'/admin',
+    name:'Admin',
+    component:Admin
   }
   ,
   {

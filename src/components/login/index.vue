@@ -1,8 +1,10 @@
 <template>
+
     <div class="login">
+        <div class='card'>
         <el-row type="flex" justify="center">
             <el-col :span="12">
-                <el-card shadow='always'>
+                <el-card shadow='hover'>
                     <h2>Login Page</h2>
                     <el-form v-on:submit.native="onSubmit">
                         <el-form-item>
@@ -18,8 +20,9 @@
                 </el-card>
             </el-col>
         </el-row>
-
+      </div>
     </div>
+
 </template>
 
 <script>
@@ -27,6 +30,9 @@
 
 export default {
     name:"Login",
+    components: {
+
+    },
     methods:{
         onSubmit:function(){
             window.alert('submit')
@@ -42,17 +48,18 @@ export default {
             logosrc:"",
             loading:false
         }
-    },
-    components:{
-
     }
 }
 </script>
 <style scoped>
-    h2{
-        padding-bottom: 50px;
-        font-size: 50px;
-    }
+h2{
+  padding-bottom: 50px;
+  font-size: 50px;
+}
+.main_container{
+  min-height: calc(100vh - 200px);
+  padding-top: 100px;
+}
 </style>
 <style>
     .login .el-input__inner:hover{
@@ -61,6 +68,8 @@ export default {
     .login .el-card{
         justify-content: center;/* 居中排列 */
         display: flex;
+        margin-top: 100px;
+        height: 500px;
 
     }
     .login .el-input input {
@@ -69,10 +78,15 @@ export default {
     .login img{
         padding: 50px;
     }
-    .login .el-card{
-        background: #006666;
-    }
+
     .login .el-button{
         width:100%;
+    }
+    .login{
+      background-color:yellow;
+      height: 100%;
+      background-image: url('../../assets/yuntech.jpg');
+      background-size: 100% 100%;
+
     }
 </style>

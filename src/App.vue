@@ -1,53 +1,37 @@
 <template>
   <div id="app">
-    <Header></Header>
-    <div class='main_container'>
-      <router-view />
-    </div>
-
-    <Footer></Footer>
+    <router-view />
   </div>
 </template>
 <script>
-import Header from './components/header/index.vue'
-import Footer from './components/footer/index.vue'
+
 
 export default {
   components: {
-    Header,Footer
   },
   data:function(){
     return{
-      record:['eric','peggy','jack']
+      record:['eric','peggy','jack'],
+      isAdmin:false
     }
   }
 }
 </script>
 <style>
-#app {
+html,body,#app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+
   color: #2c3e50;
+  height: 100%;
+  margin-bottom: 10dp;
+  overflow: hidden;
+
 }
 body { margin: 0; }
-.main_container{
-  min-height: calc(100vh - 200px);
-  
-  padding-top: 100px;
-}
-Footer{
-  color:red;
-}
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
+
 body{
   background-color: #FFFFFF;
 }
