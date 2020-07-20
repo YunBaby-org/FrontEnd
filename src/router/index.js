@@ -3,15 +3,14 @@ import VueRouter from 'vue-router'
 import Login from '../components/login/index.vue'
 import Admin from '../views/Admin.vue'
 import Home from '../views/Home.vue'
-
+import Layout from '../layout/index.vue'
 Vue.use(VueRouter)
 
   const routes = [
   {
     path: '/',
-    redirect:{
-      name:"Setting"
-    }
+    name:'/',
+    component:Layout
 
   },
   {

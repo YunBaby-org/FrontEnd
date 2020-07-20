@@ -8,13 +8,13 @@
                     <h2>Login Page</h2>
                     <el-form v-on:submit.native="onSubmit">
                         <el-form-item>
-                            <el-input prefix-icon="el-icon-user" v-model="account" placeholder="請輸入帳號"></el-input>
+                            <el-input prefix-icon="el-icon-user" v-model="email" placeholder="請輸入登入信箱"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-input prefix-icon="el-icon-lock" v-model="password" placeholder="請輸入密碼" show-password></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button native-type="submit" type="primary" v-bind:loading="loading">login</el-button>
+                            <el-button :disabled="ButtonDisabled" native-type="submit" type="primary" v-bind:loading="loading">login</el-button>
                         </el-form-item>
                     </el-form>
                 </el-card>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+
 // @ is an alias to /src
 
 export default {
@@ -35,18 +36,31 @@ export default {
     },
     methods:{
         onSubmit:function(){
-            window.alert('submit')
-            this.loading = true
+            //call api to auth 
+            let data = {
+                "email":this.email,
+                "password":this.password
+            }
+            this.$store.dispatch('Login',data)
+
         }
     },
     props:['record']
     ,
     data:function(){
         return {
-            account:"",
+            email:"",
             password:"",
             logosrc:"",
-            loading:false
+            test:true
+        }
+    },
+    computed:{
+        loading:function(){
+            return this.$store.getters.LoginLoading
+        },
+        ButtonDisabled:function(){
+            return !(this.email.length && this.password.length)
         }
     }
 }

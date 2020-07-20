@@ -4,21 +4,23 @@
   </div>
 </template>
 <script>
-
-
 export default {
   components: {
   },
   data:function(){
     return{
-      record:['eric','peggy','jack'],
-      isAdmin:false
+ 
     }
+  },
+  methods:{
+
   }
+
+
 }
 </script>
 <style>
-html,body,#app {
+/* html,body,#app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -34,5 +36,5 @@ body { margin: 0; }
 
 body{
   background-color: #FFFFFF;
-}
+} */
 </style>

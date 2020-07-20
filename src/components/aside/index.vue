@@ -5,11 +5,21 @@
         <div class="header-logo">
           System
         </div>
-        <!-- setting button  -->
-        <el-menu-item index="1" v-on:click="$router.push({name:'Setting'})">
+        <el-submenu index="1">
+          <template slot="title">
           <i class="el-icon-setting"></i>
           <span slot="title">Setting</span>
-        </el-menu-item>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="1-1">option1</el-menu-item>
+            <el-menu-item index="1-2">option2</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        <!-- setting button  -->
+        <!-- <el-menu-item index="1" v-on:click="$router.push({name:'Setting'})">
+          <i class="el-icon-setting"></i>
+          <span slot="title">Setting</span>
+        </el-menu-item> -->
 
         <!-- map button  -->
         <el-menu-item index="2" v-on:click="$router.push({name:'Map'})">
