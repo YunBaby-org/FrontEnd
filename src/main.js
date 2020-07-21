@@ -6,7 +6,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import '@/styles/index.scss' // global css
 import 'normalize.css/normalize.css' 
-
+import './permission.js'
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 new Vue({

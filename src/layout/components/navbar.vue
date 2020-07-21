@@ -6,8 +6,16 @@
           <el-dropdown class="avatar-container" trigger="click">
             <!-- avatar專門放使用者資訊的地方 -->
             <div class="avatar-wrapper">
+              <img :src="userinfo.userimg" style="width:35px; height:35px">
+              <i class="el-icon-arrow-down"></i>
             </div>
+          
             <!-- el-dropdown menu 則是click後出現的下滑選項 -->
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>test1</el-dropdown-item>
+              <el-dropdown-item>test2</el-dropdown-item>
+              <el-dropdown-item>test3</el-dropdown-item>
+            </el-dropdown-menu>
           </el-dropdown>
         </div>
     </div>
@@ -30,12 +38,19 @@ export default {
     computed:{
       sidebar:function(){
         return this.$store.getters.sidebar
+      },
+      userinfo:function(){
+        return this.$store.getters.userinfo //has token, username ,userimg 
       }
-    }
+    },
+
 }
 </script>
 
 <style lang="scss" scoped>
+img {
+  border-radius: 50%;
+}
 .navbar {
   height: 50px;
   overflow: hidden;

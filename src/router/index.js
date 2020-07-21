@@ -14,27 +14,32 @@ Vue.use(VueRouter)
 
   },
   {
+    path:'/setting',
+    name:"Setting",
+    component:()=>import('@/menu/setting.vue')
+  },
+  {
     path:'/home',
     name:'Home',
     component:Home,
-    children:[
-      {
-        path:'',
-        redirect:{
-          name:'Setting'
-        }
-      },
-      {
-        path:'/setting',
-        name:'Setting',
-        component:()=>import('../menu/setting.vue')
-      },
-      {
-        path:'/map',
-        name:'Map',
-        component:()=>import('../menu/map.vue')
-      }
-    ]
+    // children:[
+    //   {
+    //     path:'',
+    //     redirect:{
+    //       name:'Setting'
+    //     }
+    //   },
+    //   {
+    //     path:'/setting',
+    //     name:'Setting',
+    //     component:()=>import('../menu/setting.vue')
+    //   },
+    //   {
+    //     path:'/map',
+    //     name:'Map',
+    //     component:()=>import('../menu/map.vue')
+    //   }
+    // ]
   },
   {
     path:'/login',
