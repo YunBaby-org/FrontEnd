@@ -6,7 +6,7 @@ import {getToken} from '@/utils/auth'
 import store from './store'
 NProgress.configure({showSpinner:false})
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login','/register'] // no redirect whitelist
 
 /* 
     router beforeeach，簡單講就是導航守衛，可以用來
@@ -19,26 +19,34 @@ router.beforeEach(async(to,from,next)=>{
         若你沒有token，就把你push到/login這個route 
     */
     NProgress.start()
+ 
     const token = getToken()
-    console.log("token: "+token)
-    console.log('to-path:  '+to.path)
+    console.log('to: '+to.path)
+    console.log('from: '+from.path)
+    
     if(token){
         //如果你已經有token了(登陸驗證過)，就要防止你再次回到login page 
         if(to.path === '/login'){
-            next('/')
+            
+            next({ path: '/' })
             NProgress.done()
         }
         else{
             //拿到token後，往下做的時候要先fetch userinfo ，如果沒有使用者資訊，就可能有問題
-            const userinfo = store.getters.userinfo
-            if(userinfo.name){
+            console.log("has token want to change route")
+            let userinfo = store.getters.userinfo
+
+            if(userinfo.username){
+                console.log('hi')
                 next()
             }
             else{
                 try{
+                    console.log("try to getuserinfo")
                     await store.dispatch('user/GetUserInfo') 
                     next()
                 }catch(err){
+                    console.log('api get error')
                     await store.dispatch('user/ResetToken')//reset token and states
                     next(`/login?redirect=${to.path}`)
                     NProgress.done()
@@ -62,8 +70,7 @@ router.beforeEach(async(to,from,next)=>{
             NProgress.done()
         }
     }
-    ///login
-    next()
+ 
 })
 
 router.afterEach(()=>{

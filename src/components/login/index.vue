@@ -37,12 +37,12 @@ export default {
     methods:{
         onSubmit:function(){
             //call api to auth 
-            let data = {
-                "email":this.email,
-                "password":this.password
-            }
-            this.$store.dispatch('Login',data)
-
+            // let data = {
+            //     "email":this.email,
+            //     "password":this.password
+            // }
+            // this.$store.dispatch('Login',data)
+           
         }
     },
     props:['record']

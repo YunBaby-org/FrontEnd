@@ -4,7 +4,7 @@ import {getToken,removeToken} from '@/utils/auth'
 const state = {
     userinfo:{
         token:getToken(),
-        username:'default',
+        username:'',
         userimg:'https://i.imgur.com/4cBfkJM.png'
     }
 }

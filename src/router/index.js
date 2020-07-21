@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../components/login/index.vue'
 import Admin from '../views/Admin.vue'
 import Home from '../views/Home.vue'
 import Layout from '../layout/index.vue'
@@ -10,7 +9,8 @@ Vue.use(VueRouter)
   {
     path: '/',
     name:'/',
-    component:Layout
+    component:Layout,
+    
 
   },
   {
@@ -22,29 +22,16 @@ Vue.use(VueRouter)
     path:'/home',
     name:'Home',
     component:Home,
-    // children:[
-    //   {
-    //     path:'',
-    //     redirect:{
-    //       name:'Setting'
-    //     }
-    //   },
-    //   {
-    //     path:'/setting',
-    //     name:'Setting',
-    //     component:()=>import('../menu/setting.vue')
-    //   },
-    //   {
-    //     path:'/map',
-    //     name:'Map',
-    //     component:()=>import('../menu/map.vue')
-    //   }
-    // ]
   },
   {
     path:'/login',
     name:'Login',
-    component:Login
+    component:()=>import('@/views/login/index.vue')
+  },
+  {
+    path:'/register',
+    name:'Register',
+    component:()=>import('@/views/register/index.vue')
   },
   {
     path:'/admin',
@@ -63,7 +50,7 @@ Vue.use(VueRouter)
 ]
 
 const router = new VueRouter({
-  mode: 'hash',
+  
   base: process.env.BASE_URL,
   routes
 })
