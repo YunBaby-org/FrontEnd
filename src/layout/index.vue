@@ -1,6 +1,8 @@
 <template>
-    <div class="app-wrapper">
-
+    
+    <!-- 我們需要bind這個class 如果sidebar縮起來，就要換class -->
+    <div :class="ResizeSidebar" class="app-wrapper">
+        <div v-if="device==='mobile'&&sidebar.open" class="drawer-bg" @click="handleClickOutside" />
         <sidebar class="sidebar-container"></sidebar>
         <div class="main-container">
             <div :class="{'fixed-header':fixedheader}">
@@ -17,8 +19,10 @@
 import sidebar from './components/sidebar/index.vue'
 import navbar from './components/navbar'
 import MainContent from './components/MainContent'
+import ResizeMixin from './mixin/resizehandle'
 export default {
     name:"layout",
+    mixins:[ResizeMixin],
     data:function(){
         return {
             show:false
@@ -31,9 +35,28 @@ export default {
 
     },
     computed:{
+        device:function(){
+          return this.$store.state.app.device
+        },
+        sidebar:function(){
+          return this.$store.state.app.sidebar
+        },
         fixedheader:function(){
             return true 
+        },
+        ResizeSidebar:function(){
+          return{
+            hideSidebar: !this.sidebar.open,//如果這個為true，class就會後綴一個hidesidebar，就可以達到隱藏sidebar的功能
+            openSidebar: this.sidebar.open,
+            withoutAnimation: this.sidebar.withoutAnimation,
+            mobile: this.device === 'mobile'
+          }
         }
+    },
+    methods:{
+      handleClickOutside() {
+        this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      }
     }
 }
 </script>

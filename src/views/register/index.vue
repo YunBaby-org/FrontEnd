@@ -5,15 +5,15 @@
                 <h3 class="title">註冊帳號</h3>
             </div>
             <el-form-item label="信箱">
-                <el-input></el-input>
+                <el-input v-model="RegisterForm.email"></el-input>
             </el-form-item>
 
             <el-form-item label="密碼">
-                <el-input></el-input>
+                <el-input type="password" v-model="RegisterForm.password"></el-input>
             </el-form-item>
 
             <el-form-item label="手機">
-                <el-input></el-input>
+                <el-input v-model="RegisterForm.phone"></el-input>
             </el-form-item>
             
             <el-button style="width:100%; margin-top:20px;" >註冊</el-button>
@@ -28,7 +28,15 @@
 
 <script>
 export default {
-    
+    data:function(){
+        return {
+            RegisterForm:{
+                email:'',
+                password:'',
+                phone:''
+            }
+        }
+    }
 }
 </script>
 

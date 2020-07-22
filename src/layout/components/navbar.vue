@@ -1,6 +1,7 @@
 <template>
     <div class="navbar">
         <hamburger :isActive="sidebar.open" class="hamburger-container" @toggleClick="toggleSideBar" />
+        
         <!-- 右邊的使用者照片 -->
         <div class="right-menu">
           <el-dropdown class="avatar-container" trigger="click">

@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Admin from '../views/Admin.vue'
-import Home from '../views/Home.vue'
 import Layout from '../layout/index.vue'
 Vue.use(VueRouter)
 
@@ -10,42 +8,57 @@ Vue.use(VueRouter)
     path: '/',
     name:'/',
     component:Layout,
+    hidden:true
     
 
   },
   {
-    path:'/setting',
-    name:"Setting",
-    component:()=>import('@/menu/setting.vue')
+    path:'/home',
+    component:Layout,
+    children:[
+      {
+        path:'index',
+        name:'Home',
+        component:()=>import('@/views/home/index')
+      }
+    ],
+    meta: { title: 'Home', icon: 'el-icon-s-home' },
   },
   {
-    path:'/home',
-    name:'Home',
-    component:Home,
+    path:'/setting',
+    component:Layout,
+    children:[
+      {
+        path:'index',
+        name:"Setting",
+        component:()=>import('@/views/setting/index')
+      }
+    ],
+    meta: { title: 'Setting', icon: 'el-icon-setting' },
+  },
+  {
+    path:'/map',
+    component:Layout,
+    meta:{title:'Map',icon:'el-icon-map-location'},
+    children:[
+      {
+        path:'index',
+        name:'Map',
+        component:()=>import('@/views/map/index.vue')
+      }
+    ]
   },
   {
     path:'/login',
     name:'Login',
-    component:()=>import('@/views/login/index.vue')
+    component:()=>import('@/views/login/index.vue'),
+    hidden:true
   },
   {
     path:'/register',
     name:'Register',
-    component:()=>import('@/views/register/index.vue')
-  },
-  {
-    path:'/admin',
-    name:'Admin',
-    component:Admin
-  }
-  ,
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component:()=>import('@/views/register/index.vue'),
+    hidden:true
   }
 ]
 

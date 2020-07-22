@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-
+import {setToken} from '@/utils/auth'
 
 export default {
   components: {
@@ -16,6 +16,9 @@ export default {
   },
   methods:{
 
+  },
+  mounted(){
+    setToken("default-token")
   }
 
 

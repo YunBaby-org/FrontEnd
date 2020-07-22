@@ -1,6 +1,6 @@
 <template>
     <div class="login-container">
-        <el-form ref="loginForm" class="login-form"  label-width="80px" auto-complete="on" label-position="left">
+        <el-form ref="loginForm" :model="LoginInfo" :rules="LoginRules" class="login-form"  label-width="80px" auto-complete="on" label-position="left">
             <div class="title-container">
                 <h3 class="title">
                     使用者登入
@@ -8,7 +8,7 @@
             </div>
 
             <!-- email -->
-            <el-form-item style="margin-left:0px">
+            <el-form-item  prop="email">
                 <span class="svg-container">
                     <i class="el-icon-user"></i>
                 </span>
@@ -17,13 +17,13 @@
             </el-form-item>
 
             <!-- password -->
-            <el-form-item>
+            <el-form-item prop="password">
                 <span class="svg-container">
                     <i class="el-icon-lock"></i>
                 </span>
                 <el-input type="password" v-model="LoginInfo.password" placeholder="Enter your password"></el-input>
             </el-form-item>
-            <el-button round style="width:100%">登入</el-button>
+            <el-button @click="HandleLogin" :loading="loading" style="width:100%; margin-top:20px;">登入</el-button>
             <div class="tips" style="width:100%;text-align:center; margin-top:30px;">
                 <span>Create an account</span>
             </div>
@@ -33,13 +33,44 @@
 
 
 <script>
+import { Message } from 'element-ui';
 export default {
     data:function(){
+        const ValidEmail = (rule,value,callback)=>{
+            callback()
+        }
+        const ValidPassword = (rule,value,callback)=>{
+            if(value.length<6){
+                callback(new Error('密碼長度必須大於6個字元'))
+            }
+            else{
+                callback()
+            }
+        }
         return {
             LoginInfo:{
                 email:"",
                 password:""
-            }
+            },
+            LoginRules:{
+                email:[{validator:ValidEmail}],
+                password:[{validator:ValidPassword}]
+            },
+            loading:false
+        }
+    },
+    methods:{
+        HandleLogin:function(){
+            //el-form 有個ref參數 如果我要取得el-form內部的屬性，就要用$refs
+            this.$refs.loginForm.validate(valid=>{
+                if(valid){
+                    Message.success("submit success")
+                 
+                }
+                else{
+                    Message.error("submit error")
+                }
+            })
         }
     }
 }
