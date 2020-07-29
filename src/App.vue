@@ -3,6 +3,8 @@
     <router-view />
   </div>
 </template>
+
+
 <script>
 import {setToken} from '@/utils/auth'
 

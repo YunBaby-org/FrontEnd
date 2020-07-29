@@ -10,6 +10,7 @@ export function UserLogin(data){
     //axios instance看到這個config裡面的method，就會自動發出POST
     console.log('data',data)
     return request(config)
+    //接收這個參數後 可以使用.then()
 }
 export function GetUserInfo(token){
     console.log("api = "+token)

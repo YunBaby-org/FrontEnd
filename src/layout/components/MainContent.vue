@@ -1,6 +1,5 @@
 <template>
     <div class="app-main">
-        <h1>this is content</h1>
         <transition name="fade-transform" mode="out-in">
             <router-view></router-view>
         </transition>

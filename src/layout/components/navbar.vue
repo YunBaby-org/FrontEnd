@@ -7,7 +7,8 @@
           <el-dropdown class="avatar-container" trigger="click">
             <!-- avatar專門放使用者資訊的地方 -->
             <div class="avatar-wrapper">
-              <img :src="userinfo.userimg" style="width:35px; height:35px">
+              <!-- <img :src="userinfo.userimg" style="width:35px; height:35px"> -->
+              <el-avatar :src="userinfo.userimg"></el-avatar>
               <i class="el-icon-arrow-down"></i>
             </div>
           
