@@ -90,8 +90,6 @@ export default {
           "phone":"0905579903",
           "email":this.LoginInfo.email,
           "password":this.LoginInfo.password,
-          // "email":"azsx26735546@gmail.com",
-          // "password":"azsx258741",
           "address":"三蝦"
         }
         await UserLogin(data).then(res=>{
