@@ -1,12 +1,12 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
-
+axios.defaults.withCredentials = true;
 /*
     create error handler 
 */
 const ErrorHandler = (msg)=>{
     
-    Message.error('Error Handler: '+msg)
+    Message.error(msg)
     
 }
 /*
@@ -40,8 +40,9 @@ axios_instance.interceptors.request.use((config)=>{
 axios_instance.interceptors.response.use((response)=>{
     return response
 },(error)=>{
-    console.log("ERRROR in response interceptors")
-    ErrorHandler("errrrrrror")
+    console.log('response攔截')
+    console.log(error.response)
+    ErrorHandler(error.response.data.error)
     return new Promise.reject(error)
 })
 

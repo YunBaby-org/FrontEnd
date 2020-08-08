@@ -23,7 +23,7 @@
                 </span>
                 <el-input type="password" v-model="LoginInfo.password" placeholder="Enter your password"></el-input>
             </el-form-item>
-            <el-button @click="HandleLogin" :loading="loading" style="width:100%; margin-top:20px;">登入</el-button>
+            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="HandleLogin" style="width:100%; margin-top:20px;">登入</el-button>
             <div class="tips" style="width:100%;text-align:center; margin-top:30px;">
                 <span>Create an account</span>
             </div>
@@ -33,7 +33,10 @@
 
 
 <script>
-import { Message } from 'element-ui';
+//import { Message } from 'element-ui';
+import axios from 'axios'
+import {UserLogin} from '@/apis/user'
+axios.defaults.withCredentials = true
 export default {
     data:function(){
         const ValidEmail = (rule,value,callback)=>{
@@ -56,22 +59,56 @@ export default {
                 email:[{validator:ValidEmail}],
                 password:[{validator:ValidPassword}]
             },
-            loading:false
+            fullscreenLoading:false
         }
     },
     methods:{
-        HandleLogin:function(){
-            //el-form 有個ref參數 如果我要取得el-form內部的屬性，就要用$refs
-            this.$refs.loginForm.validate(valid=>{
-                if(valid){
-                    Message.success("submit success")
-                 
-                }
-                else{
-                    Message.error("submit error")
-                }
-            })
+      test:async function(){
+        this.loading = true 
+        console.log('1')
+        console.log(this.loading)
+        let response = await this.post()
+        console.log(response)
+        console.log('3')
+      },
+      post:function(){
+        return new Promise((resolve,reject)=>{
+          axios.get('http://140.125.205.78:5001/auth/test').then(res=>{
+            resolve(res)
+          }).catch(err=>{
+            reject(err)
+          })
+        })
+
+      },
+      HandleLogin:async function(){
+        //this.loading = true
+        this.fullscreenLoading = true
+        let data = {
+          "userid":"asd96148",
+          "username":"邱品峰",
+          "phone":"0905579903",
+          "email":this.LoginInfo.email,
+          "password":this.LoginInfo.password,
+          // "email":"azsx26735546@gmail.com",
+          // "password":"azsx258741",
+          "address":"三蝦"
         }
+        await UserLogin(data).then(res=>{
+          console.log(res)
+          
+        })
+        this.fullscreenLoading = false
+        // this.$refs.loginForm.validate(valid=>{
+        //   if(valid){
+        //     Message.success("submit success")
+                 
+        //   }
+        //   else{
+        //     Message.error("submit error")
+        //   }
+        // })
+      }
     }
 }
 </script>

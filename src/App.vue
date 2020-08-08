@@ -6,7 +6,7 @@
 
 
 <script>
-import {setToken} from '@/utils/auth'
+//import {setToken} from '@/utils/auth'
 
 export default {
   components: {
@@ -20,7 +20,7 @@ export default {
 
   },
   mounted(){
-    setToken("default-token")
+    //setToken("default-token")
   }
 
 

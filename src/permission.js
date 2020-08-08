@@ -4,14 +4,26 @@ import router from './router'
 import NProgress from 'nprogress'
 import {getToken} from '@/utils/auth'
 import store from './store'
+import axios_instance from './utils/request'
 NProgress.configure({showSpinner:false})
-
+import axios from 'axios'
 const whiteList = ['/login','/register'] // no redirect whitelist
 
 /* 
     router beforeeach，簡單講就是導航守衛，可以用來
     做一些保護，例如未拿到驗證token，就不能往下
 */
+router.beforeEach(async(to,from,next)=>{
+    //this api will check jwt token 
+    axios.get('/check_jwt').then((res)=>{
+        if(res.data.error){
+            next({path:'/login'})
+        }
+        else{
+            next()
+        }
+    })
+})
 router.beforeEach(async(to,from,next)=>{
     /*
         每次要切換route的時候，先去取得token 
@@ -43,11 +55,11 @@ router.beforeEach(async(to,from,next)=>{
             else{
                 try{
                     console.log("try to getuserinfo")
-                    await store.dispatch('user/GetUserInfo') 
+                    //await store.dispatch('user/GetUserInfo') 
                     next()
                 }catch(err){
                     console.log('api get error')
-                    await store.dispatch('user/ResetToken')//reset token and states
+                    //await store.dispatch('user/ResetToken')//reset token and states
                     next(`/login?redirect=${to.path}`)
                     NProgress.done()
                 }
