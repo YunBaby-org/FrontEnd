@@ -35,7 +35,7 @@
 <script>
 //import { Message } from 'element-ui';
 import axios from 'axios'
-import {UserLogin} from '@/apis/user'
+import {TestGCP} from '@/apis/user'
 axios.defaults.withCredentials = true
 export default {
     data:function(){
@@ -84,15 +84,16 @@ export default {
       HandleLogin:async function(){
         //this.loading = true
         this.fullscreenLoading = true
-        let data = {
-          "userid":"asd96148",
-          "username":"邱品峰",
-          "phone":"0905579903",
-          "email":this.LoginInfo.email,
-          "password":this.LoginInfo.password,
-          "address":"三蝦"
-        }
-        await UserLogin(data).then(res=>{
+        // let data = {
+        //   "userid":"asd96148",
+        //   "username":"邱品峰",
+        //   "phone":"0905579903",
+        //   "email":this.LoginInfo.email,
+        //   "password":this.LoginInfo.password,
+        //   "address":"三蝦"
+        // }
+        await TestGCP().then(res=>{
+          console.log('testgcp')
           console.log(res)
           
         })
