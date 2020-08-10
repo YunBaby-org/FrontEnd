@@ -26,11 +26,3 @@ export function GetUserInfo(token){
     return request(config)
 }
 
-export function TestGCP(){
-    let config = {
-        url:'https://b10617046.nctu.me/hello',
-        method:'POST',
-    }
-    //axios instance看到這個config裡面的method，就會自動發出POST
-    return request(config)
-}
