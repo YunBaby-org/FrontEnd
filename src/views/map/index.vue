@@ -1,16 +1,29 @@
 <template>
   <div class="app-container" style="height:100%" >
-    <button @click="test">test mock </button>
- 
+    <div class="color-mark">
+      
+      <div style="margin-bottom:5px;">
+        <div style="width:15px; height:15px; background-color: #FF6666;display: inline-block;" >
+        </div>
+        Geo-fence
+      </div>
+
+      <div>
+        <div style="width:15px; height:15px; background-color: #B266FF;display: inline-block;" >
+        </div>
+        User-position
+      </div>
+    </div>
+
     <GmapMap
       :center="{lat:23.696413, lng:120.532343}"
-      :zoom="17"
+      :zoom="18"
       map-type-id="terrain"
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
 
       <div v-for="(m,index) in markers" :key="index">
-        <gmap-custom-marker :marker="m.position" alignment="center">
+        <gmap-custom-marker :marker="m.current_position" alignment="center" :class="circle_animation" >
           <el-avatar :size="50">{{m.user.name}}</el-avatar>
         </gmap-custom-marker>
         
@@ -19,12 +32,13 @@
         <GmapCircle
           :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
           :center="m.fences_position"
+          :class="circle_animation"
           :radius="m.f_radius">
         </GmapCircle>
         <!-- Gmap circle(user position) -->
         <GmapCircle
           :options="{fillColor:'#0000ff',fillOpacity:0.4,strokeColor:'#0000ff',strokeOpacity:0.4}"
-          :center="m.position"
+          :center="m.current_position"
           :radius="m.radius">
         </GmapCircle>
 
@@ -46,9 +60,9 @@
     },
     data() {
       return {
-        redColor:"#FF0000",
-        getans:false,
-        markers:null
+        markers:null,
+        marker_animation:'animate__animated animate__bounce animate__infinite	infinite',
+        circle_animation:'animate__animated animate__pulse animate__infinite	infinite'
       }
     },
     methods:{
@@ -79,5 +93,10 @@
   .mymap{
     width: 85%;
     height: 700px;
+  }
+  .color-mark{
+    width: 30%;
+    margin-bottom: 15px;
+    
   }
 </style>

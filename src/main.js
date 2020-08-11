@@ -7,6 +7,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/styles/index.scss' // global css
 import 'normalize.css/normalize.css' 
 import * as VueGoogleMaps from 'vue2-google-maps'
+import 'animate.css'
+
 require('./mock')
 //import './permission.js'
 
@@ -14,10 +16,11 @@ require('./mock')
 
 
 Vue.config.productionTip = false
-Vue.use(ElementUI);
+Vue.use(ElementUI)
+
 Vue.use(VueGoogleMaps, {
   load: {
-    key: '',
+    key: 'AIzaSyBjhAFau4cOhL7DgFy1wCeitozdBUD_YNM',
     libraries: 'places', // This is required if you use the Autocomplete plugin
     // OR: libraries: 'places,drawing'
     // OR: libraries: 'places,drawing,visualization'
