@@ -20,7 +20,7 @@ Vue.use(ElementUI)
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyBjhAFau4cOhL7DgFy1wCeitozdBUD_YNM',
+    key: '',
     libraries: 'places', // This is required if you use the Autocomplete plugin
     // OR: libraries: 'places,drawing'
     // OR: libraries: 'places,drawing,visualization'
