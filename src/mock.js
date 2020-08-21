@@ -1,6 +1,35 @@
 const Mock = require('mockjs')
 
-
+Mock.mock('/user/path/toby5500','get',()=>{
+    return {
+        "path":[
+            {
+                "lat":23.690079,
+                "lng":120.535701
+            },
+            {
+                "lat":23.690023,
+                "lng":120.535427
+            },
+            {
+                "lat":23.689959,
+                "lng":120.534982
+            },
+            {
+                "lat":23.689885,
+                "lng":120.534558
+            },
+            {
+                "lat":23.689853,
+                "lng":120.534333
+            },
+            {
+                "lat":23.689686,
+                "lng":120.534365
+            }
+        ]
+    }
+})
 Mock.mock('/user/locations','get',()=>{
     return {
         "markers":[
