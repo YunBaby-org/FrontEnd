@@ -16,7 +16,7 @@
                 <el-input v-model="RegisterForm.phone"></el-input>
             </el-form-item>
             
-            <el-button style="width:100%; margin-top:20px;" >註冊</el-button>
+            <el-button v-loading.fullscreen.lock="fullscreenLoading" style="width:100%; margin-top:20px;" @click="HandleRegister">註冊</el-button>
            
             
         </el-form>
@@ -27,6 +27,7 @@
 
 
 <script>
+import {UserRegister} from '@/apis/user'
 export default {
     data:function(){
         return {
@@ -34,8 +35,32 @@ export default {
                 email:'',
                 password:'',
                 phone:''
-            }
+            },
+            fullscreenLoading:false
         }
+    },
+    methods:{
+      HandleRegister:async function(){
+        this.fullscreenLoading = true 
+        let data = {
+          "userid":"asd96148",
+          "username":"邱品峰",
+          "phone":this.RegisterForm.phone,
+          "email":this.RegisterForm.email,
+          "password":this.RegisterForm.password,
+          "address":"三蝦"
+        }
+        
+        await UserRegister(data).then(res=>{
+          console.log('register response')
+          console.log(res)
+        }).catch(err=>{
+          console.log('register error catch ')
+          console.log(err.response)
+        })
+        this.fullscreenLoading = false
+        console.log('register complete')
+      }
     }
 }
 </script>

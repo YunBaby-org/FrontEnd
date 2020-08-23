@@ -76,6 +76,7 @@
   import GmapCustomMarker from 'vue2-gmap-custom-marker';
   import axios from 'axios'
   import {gmapApi} from 'vue2-google-maps'
+  import webstomp from 'webstomp-client';
   export default {
     components:{
       'gmap-custom-marker': GmapCustomMarker
@@ -93,10 +94,15 @@
         path2:[
           {"lat": 23.690079, "lng": 120.535701},{"lat": 23.690023, "lng": 120.535427}
         ],
-        test123:'#0000ff'
+        test123:'#0000ff',
+        connection:null,
+        client:null
       }
     },
     methods:{
+      create_websocket:function(){
+
+      },
       push:function(){
         this.smoth_road.push({"lat":23.689459,"lng":120.534424})
       },
@@ -111,7 +117,7 @@
       },
       RoadApi:function(){
         let data = ''
-        let api_key = ''
+        let api_key = process.env.VUE_APP_ROAD_API
         for(let i = 0;i<this.roads.length;i++){
    
           data = data + this.roads[i]['lat']+','+this.roads[i]['lng']
@@ -148,6 +154,32 @@
       timer:function(){
 
       }
+    },
+    created(){
+      let client = webstomp.over(new WebSocket('ws://140.125.205.78:15674/ws'))
+      var on_connect = function() {
+        client.send('/queue/test',"sex")
+        client.subscribe('/topic/test',(d)=>{
+          console.log(d.body)
+        })
+      };
+      var on_error =  function() {
+          console.log('error');
+      };
+      client.connect('guest','guest',on_connect,on_error,'/')
+      console.log('-------------')
+  
+      /*  native websocket  */
+      // this.connection = new WebSocket('ws://140.125.205.78:8080')
+      // this.connection.onmessage = function(msg){
+      //   console.log('server send ')
+      //   console.log(msg.data)
+      // }
+      // this.connection.onopen = function(event) {
+      //   console.log(event)
+      //   console.log("Successfully connected to the websocket server...")
+      // }
+
     },
     mounted(){
       // this.$refs.map.$mapPromise.then(map=>{

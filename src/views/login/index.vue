@@ -13,7 +13,7 @@
                     <i class="el-icon-user"></i>
                 </span>
 
-                <el-input v-model="LoginInfo.email" placeholder="Enter your email"></el-input>
+                <el-input v-model="LoginInfo.email" placeholder="請輸入您的信箱"></el-input>
             </el-form-item>
 
             <!-- password -->
@@ -21,11 +21,12 @@
                 <span class="svg-container">
                     <i class="el-icon-lock"></i>
                 </span>
-                <el-input type="password" v-model="LoginInfo.password" placeholder="Enter your password"></el-input>
+                <el-input type="password" v-model="LoginInfo.password" placeholder="請輸入您的密碼"></el-input>
             </el-form-item>
-            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="HandleLogin" style="width:100%; margin-top:20px;">登入</el-button>
+            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="post" style="width:100%; margin-top:20px;">登入</el-button>
+            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="post2" style="width:100%; margin-top:20px;">登入</el-button>
             <div class="tips" style="width:100%;text-align:center; margin-top:30px;">
-                <span>Create an account</span>
+                <router-link to="register">註冊帳號</router-link>
             </div>
         </el-form>
     </div>
@@ -33,10 +34,9 @@
 
 
 <script>
-//import { Message } from 'element-ui';
 import axios from 'axios'
 import {UserLogin} from '@/apis/user'
-axios.defaults.withCredentials = true
+
 export default {
     data:function(){
         const ValidEmail = (rule,value,callback)=>{
@@ -63,6 +63,12 @@ export default {
         }
     },
     methods:{
+      post2:function(){
+        axios.defaults.withCredentials = true
+        axios.post('http://140.125.205.78:5001/auth/testing',{},{withCredentials:true}).then(res=>{
+          console.log(res)
+        })
+      },
       test:async function(){
         this.loading = true 
         console.log('1')
@@ -72,41 +78,36 @@ export default {
         console.log('3')
       },
       post:function(){
-        return new Promise((resolve,reject)=>{
-          axios.get('http://140.125.205.78:5001/auth/test').then(res=>{
-            resolve(res)
-          }).catch(err=>{
-            reject(err)
-          })
+        let data = {
+          "email":'azsx26735546@gmail.com',
+          "password":"P499UYCB"
+        }
+        axios.defaults.withCredentials = true
+        axios.post('http://140.125.205.78:5001/auth/login',data,{withCredentials:true}).then(res=>{
+          console.log(res)
+        }).catch(err=>{
+          console.log(err.response)
         })
 
       },
       HandleLogin:async function(){
-        //this.loading = true
         this.fullscreenLoading = true
         let data = {
-          "userid":"asd96148",
-          "username":"邱品峰",
-          "phone":"0905579903",
           "email":this.LoginInfo.email,
-          "password":this.LoginInfo.password,
-          "address":"三蝦"
+          "password":this.LoginInfo.password
         }
         await UserLogin(data).then(res=>{
-
+          console.log('this is response')
           console.log(res)
+          console.log(res.status)
           
+        }).catch(err=>{
+          console.log('this catch ')
+          console.log(err.response)
         })
+    
         this.fullscreenLoading = false
-        // this.$refs.loginForm.validate(valid=>{
-        //   if(valid){
-        //     Message.success("submit success")
-                 
-        //   }
-        //   else{
-        //     Message.error("submit error")
-        //   }
-        // })
+
       }
     }
 }

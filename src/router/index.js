@@ -22,7 +22,7 @@ Vue.use(VueRouter)
         component:()=>import('@/views/home/index')
       }
     ],
-    meta: { title: 'Home', icon: 'el-icon-s-home' },
+    meta: { title: '首頁', icon: 'el-icon-s-home' },
   },
   {
     path:'/setting',
@@ -34,17 +34,29 @@ Vue.use(VueRouter)
         component:()=>import('@/views/setting/index')
       }
     ],
-    meta: { title: 'Setting', icon: 'el-icon-setting' },
+    meta: { title: '設定', icon: 'el-icon-setting' },
   },
   {
     path:'/map',
     component:Layout,
-    meta:{title:'Map',icon:'el-icon-map-location'},
+    meta:{title:'地圖',icon:'el-icon-map-location'},
     children:[
       {
         path:'index',
         name:'Map',
         component:()=>import('@/views/map/index.vue')
+      }
+    ]
+  },
+  {
+    path:'/add',
+    component:Layout,
+    meta:{title:'新增',icon:'el-icon-plus'},
+    children:[
+      {
+        path:'index',
+        name:'Add',
+        component:()=>import('@/views/add/index.vue')
       }
     ]
   },

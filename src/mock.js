@@ -1,5 +1,57 @@
-const Mock = require('mockjs')
+const Mock = require('mockjs-async')
 
+Mock.mock('/api/v1/resources/users/tracklist','get',async()=>{
+
+})
+Mock.mock('/api/v1/resources/users/information','get',async()=>{
+    await new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log('timeout')
+            resolve()
+        },3000)
+    })
+    return {
+        "name":"邱品峰",
+        "email":"azsx26735546@gmail.com"
+    }
+})
+Mock.mock('/api/v1/resources/users/trackers','get',async()=>{
+    await new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log('timeout')
+            resolve()
+        },3000)
+    })
+    return {
+        "trackers":[
+            {
+                "name":"邱品峰",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579955"
+            },
+            {
+                "name":"邱品峰2",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579947"
+            },
+            {
+                "name":"邱品峰3",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579956"
+            },
+            {
+                "name":"邱品峰4",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579978"
+            },
+            {
+                "name":"邱品峰5",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579912"
+            }
+        ]
+    }
+})
 Mock.mock('/user/path/toby5500','get',()=>{
     return {
         "path":[
