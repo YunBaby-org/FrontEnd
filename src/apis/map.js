@@ -18,3 +18,13 @@ export function RoadApi(roads){
 
     return request(config)
 }
+
+export function GetAllMarkers(){
+    let api_url = '/user/locations'
+    let config = {
+        url:api_url,
+        method:'GET'
+    }
+
+    return request(config)
+}

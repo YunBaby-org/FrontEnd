@@ -21,17 +21,26 @@ export function UserRegister(data){
 
     return request(config)
 }
-export function GetUserInfo(token){
-    console.log("api = "+token)
+
+export function GetUserInfo(){
     let config = {
-        url:base_url+'/user/info',
-        method:'GET',
-        params:{
-            "token":token,
-            "name":"eric",
-            "age":18
-        }
+        url:base_url+'/api/v1/resources/users/information',
+        method:'GET'
     }
+
     return request(config)
 }
+// export function GetUserInfo(token){
+//     console.log("api = "+token)
+//     let config = {
+//         url:base_url+'/user/info',
+//         method:'GET',
+//         params:{
+//             "token":token,
+//             "name":"eric",
+//             "age":18
+//         }
+//     }
+//     return request(config)
+// }
 

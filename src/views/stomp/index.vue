@@ -53,6 +53,7 @@ export default {
         },
         StartSubscribe:function(){
             this.client.subscribe('/queue/tracker.aaa96148.requests',this.on_message)
+            this.client.subscribe('/queue/tracker.toby5500.requests',this.on_message)
         },
         SendToQueue:function(msg){
             this.client.send('/queue/tracker.aaa96148.requests',msg,{})

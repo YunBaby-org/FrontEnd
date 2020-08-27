@@ -31,20 +31,15 @@ const mutations = {
 
 //會有一個固定的參數 commit 
 const actions = {
-    GetUserInfo:function({commit,state}){
+    GetUserInfo:function({commit,}){
         return new Promise((resolve,reject)=>{
-            GetUserInfo(state.userinfo.token).then(res=>{
+            GetUserInfo().then(res=>{
 
                 const {data} = res
                 const username = data.username
-                const userimg = data.userimg
-                
-                // console.log("username :"+username)
-                // console.log("userimg: "+userimg)
 
                 /*  call mutation to change vuex state's value  */
                 commit("SET_USERNAME",username)
-                commit("SET_USERIMG",userimg)
 
                 resolve(data)
             }).catch(err=>{

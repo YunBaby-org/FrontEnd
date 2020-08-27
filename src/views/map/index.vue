@@ -75,12 +75,22 @@
   import GmapCustomMarker from 'vue2-gmap-custom-marker';
   import axios from 'axios'
   import {gmapApi} from 'vue2-google-maps'
+  import {GetAllMarkers} from '@/apis/map.js'
   export default {
     components:{
       'gmap-custom-marker': GmapCustomMarker
     },
     computed:{
       google:gmapApi
+    },
+    created(){
+      GetAllMarkers().then(res=>{
+        console.log(res)
+        this.markers = res.data.markers 
+      }).catch(err=>{
+        console.log(err)
+      })
+      
     },
     data() {
       return {
@@ -92,9 +102,6 @@
         path2:[
           {"lat": 23.690079, "lng": 120.535701},{"lat": 23.690023, "lng": 120.535427}
         ],
-        test123:'#0000ff',
-        connection:null,
-        client:null
       }
     },
     methods:{
