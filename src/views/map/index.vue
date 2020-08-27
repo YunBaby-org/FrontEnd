@@ -75,7 +75,6 @@
   import GmapCustomMarker from 'vue2-gmap-custom-marker';
   import axios from 'axios'
   import {gmapApi} from 'vue2-google-maps'
-  import webstomp from 'webstomp-client';
   export default {
     components:{
       'gmap-custom-marker': GmapCustomMarker
@@ -99,12 +98,6 @@
       }
     },
     methods:{
-      create_websocket:function(){
-
-      },
-      push:function(){
-        this.smoth_road.push({"lat":23.689459,"lng":120.534424})
-      },
       GetRoad:function(){
         axios.get('/user/path/toby5500').then(res=>{
           this.roads = res.data.path
@@ -113,66 +106,7 @@
         }).catch(err=>{
           console.log(err)
         })
-      },
-      RoadApi:function(){
-        let data = ''
-        let api_key = process.env.VUE_APP_ROAD_API
-        for(let i = 0;i<this.roads.length;i++){
-   
-          data = data + this.roads[i]['lat']+','+this.roads[i]['lng']
-          if(!(i==this.roads.length-1))
-            data+='|'
-            
-        }
-        let url = 'https://roads.googleapis.com/v1/snapToRoads?path='+data+'&interpolate=true&key='+api_key
-        console.log(url)
-        axios.get(url).then(res=>{
-          let smooth = []
-          console.log('google api')
-          console.log(res)
-          console.log(res.data.snappedPoints)
-          let retv = res.data.snappedPoints
-          for(let i = 0;i<retv.length;i++){
-            let temp = retv[i].location
-            smooth.push({"lat":temp['latitude'],"lng":temp['longitude']})
-          }
-          this.smoth_road = smooth
-          console.log(this.smoth_road)
-        }).catch(err=>{
-          console.log('google api error')
-          console.log(err)
-        })
-      },
-      test:function(){
-        axios.get('/user/locations2').then(res=>{
-          console.log(res)
-          console.log(res.data.markers)
-          this.markers = res.data.markers
-        })
-      },
-      timer:function(){
-
       }
-    },
-    created(){
-      let ws = new WebSocket('ws://127.0.0.1:15674/ws')
-      let client = webstomp.over(ws)
-      var on_connect = function() {
-        // client.send('/queue/test',"sex")
-        // client.subscribe('/topic/test',(d)=>{
-        //   console.log(d.body)
-        // })
-        console.log('we connected')
-        client.send('/queue/test123',"asdsdfasdasf",{})
-        
-      };
-      var on_error =  function() {
-          console.log('error');
-      };
-      client.connect('guest','guest',on_connect,on_error,'/')
-      console.log('-------------')
-  
-
     }
   }
 </script>
