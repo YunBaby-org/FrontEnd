@@ -61,6 +61,18 @@ Vue.use(VueRouter)
     ]
   },
   {
+    path:'/stomp',
+    component:Layout,
+    meta:{title:'測試',icon:'el-icon-plus'},
+    children:[
+      {
+        path:'index',
+        name:'Stomp',
+        component:()=>import('@/views/stomp/index.vue')
+      }
+    ]
+  },
+  {
     path:'/login',
     name:'Login',
     component:()=>import('@/views/login/index.vue'),

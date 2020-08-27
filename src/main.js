@@ -10,7 +10,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import 'animate.css'
 
 require('./mock')
-//import './permission.js'
+import './permission.js'
 
 
 

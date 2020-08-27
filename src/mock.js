@@ -1,7 +1,12 @@
 const Mock = require('mockjs-async')
 
-Mock.mock('/api/v1/resources/users/tracklist','get',async()=>{
 
+
+Mock.mock('/api/v1/resources/users/me','get',async()=>{
+
+    return{
+        "message":"fucking error",
+    }
 })
 Mock.mock('/api/v1/resources/users/information','get',async()=>{
     await new Promise(resolve=>{
@@ -13,6 +18,28 @@ Mock.mock('/api/v1/resources/users/information','get',async()=>{
     return {
         "name":"邱品峰",
         "email":"azsx26735546@gmail.com"
+    }
+})
+Mock.mock('/api/v2/resources/users/trackers','get',async()=>{
+    await new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log('timeout')
+            resolve()
+        },3000)
+    })
+    return {
+        "trackers":[
+            {
+                "name":"邱品峰",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579955"
+            },
+            {
+                "name":"安安安",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579947"
+            }
+        ]
     }
 })
 Mock.mock('/api/v1/resources/users/trackers','get',async()=>{

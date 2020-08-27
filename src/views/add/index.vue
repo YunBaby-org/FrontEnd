@@ -7,13 +7,13 @@
             <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;">
                 <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標信箱</el-col>
                 <el-col :xs="14" :sm="6" :md="9" :lg="9" :xl="9">
-                    <el-input placeholder="enter tracker's email"></el-input>
+                    <el-input v-model="target_form.email" placeholder="enter tracker's email"></el-input>
                 </el-col>
             </el-row>
             <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;">
                 <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標密碼</el-col>
                 <el-col :xs="14" :sm="6" :md="9" :lg="9" :xl="9">
-                    <el-input placeholder="enter tracker's email"></el-input>
+                    <el-input v-model="target_form.password" placeholder="enter tracker's email"></el-input>
                 </el-col>
             </el-row>
             <el-button round style="margin:0 auto;display:block; width:100px;" type="primary" plain>新增</el-button>        
@@ -30,7 +30,9 @@
                 <h1>追蹤清單</h1>
             </div>
             <el-button @click="refresh" type="primary" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
+            <el-button @click="refresh2" type="danger" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
             <el-table
+                :data="trackerList"
                 height="250"
                 border>
                 <el-table-column
@@ -47,6 +49,14 @@
                     prop="email"
                     label="信箱">
                 </el-table-column>
+                <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="100">
+                <template>
+                    <el-button type="text" size="small">刪除</el-button>
+                </template>
+                </el-table-column>
             </el-table>      
 
         </el-card>
@@ -58,15 +68,34 @@ import axios from 'axios'
 export default {
     data:function(){
         return {
-            
+            target_form:{
+                "email":null,
+                "password":null
+            }
+        }
+    },
+    computed:{
+        trackerList:function(){
+            return this.$store.getters.trackerList
         }
     },
     methods:{
-        refresh:function(){
-            axios.get('/api/v1/resources/users/trackers').then(res=>{
-                console.log(res)
+        refresh2:function(){
+            axios.get('/api/v2/resources/users/trackers').then(res=>{
                 console.log(res.data['trackers'])
                 let tracker_list = res.data['trackers']
+                //this.trackerList = tracker_list
+                this.$store.dispatch("trackers/UpdateTrackerList",tracker_list)                
+            }).catch(err=>{
+                console.log(err)
+            })
+        },
+        refresh:function(){
+            axios.get('/api/v1/resources/users/trackers').then(res=>{
+                
+                console.log(res.data['trackers'])
+                let tracker_list = res.data['trackers']
+                //this.trackerList = tracker_list
                 this.$store.dispatch("trackers/UpdateTrackerList",tracker_list)
             }).catch(err=>{
                 console.log(err)
@@ -87,9 +116,7 @@ export default {
   }
   .el-row {
     margin-bottom: 20px;
-    &:last-child {
-      margin-bottom: 0;
-    }
+
   }
   .el-col {
     border-radius: 4px;

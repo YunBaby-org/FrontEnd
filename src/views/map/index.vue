@@ -2,19 +2,18 @@
   <div class="app-container" style="height:100%" >
     <div class="color-mark">
       
-      <div style="margin-bottom:5px;">
-        <div style="width:15px; height:15px; background-color: #FF6666;display: inline-block;" >
-        </div>
-        Geo-fence
-      </div>
-
-      <div>
-        <div style="width:15px; height:15px; background-color: #B266FF;display: inline-block;" >
-        </div>
-        User-position
-      </div>
-      <el-button @click="GetRoad">road</el-button>
-      <el-button @click="push">push</el-button>
+      <el-row>
+        <el-col>
+          <div style="width:15px; height:15px; background-color: #FF6666;display: inline-block;" ></div>
+          Geo-fence
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col>
+          <div style="width:15px; height:15px; background-color: #B266FF;display: inline-block;" ></div>
+          User-position
+        </el-col>
+      </el-row>
     </div>
 
     <GmapMap
@@ -156,12 +155,16 @@
       }
     },
     created(){
-      let client = webstomp.over(new WebSocket('ws://140.125.205.78:15674/ws'))
+      let ws = new WebSocket('ws://127.0.0.1:15674/ws')
+      let client = webstomp.over(ws)
       var on_connect = function() {
-        client.send('/queue/test',"sex")
-        client.subscribe('/topic/test',(d)=>{
-          console.log(d.body)
-        })
+        // client.send('/queue/test',"sex")
+        // client.subscribe('/topic/test',(d)=>{
+        //   console.log(d.body)
+        // })
+        console.log('we connected')
+        client.send('/queue/test123',"asdsdfasdasf",{})
+        
       };
       var on_error =  function() {
           console.log('error');
@@ -169,23 +172,6 @@
       client.connect('guest','guest',on_connect,on_error,'/')
       console.log('-------------')
   
-      /*  native websocket  */
-      // this.connection = new WebSocket('ws://140.125.205.78:8080')
-      // this.connection.onmessage = function(msg){
-      //   console.log('server send ')
-      //   console.log(msg.data)
-      // }
-      // this.connection.onopen = function(event) {
-      //   console.log(event)
-      //   console.log("Successfully connected to the websocket server...")
-      // }
-
-    },
-    mounted(){
-      // this.$refs.map.$mapPromise.then(map=>{
-      //   console.log(map)
-      //   console.log(this.google.maps.SymbolPath.FORWARD_CLOSED_ARROW)
-      // })
 
     }
   }
