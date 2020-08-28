@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/styles/index.scss' // global css
 import 'normalize.css/normalize.css' 
 import * as VueGoogleMaps from 'vue2-google-maps'
+import GmapCluster from "vue2-google-maps/dist/components/cluster"
 import 'animate.css'
 
 require('./mock')
@@ -17,7 +18,6 @@ import './permission.js'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
-
 Vue.use(VueGoogleMaps, {
   load: {
     key: process.env.VUE_APP_GMAP_API,
@@ -43,6 +43,7 @@ Vue.use(VueGoogleMaps, {
   //// If you want to automatically install all the components this property must be set to 'true':
   installComponents: true
 })
+Vue.component("cluster", GmapCluster)
 new Vue({
   router,
   store,

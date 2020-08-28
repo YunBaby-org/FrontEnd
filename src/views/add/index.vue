@@ -30,7 +30,6 @@
                 <h1>追蹤清單</h1>
             </div>
             <el-button @click="refresh" type="primary" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
-            <el-button @click="refresh2" type="danger" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
             <el-table
                 :data="trackerList"
                 height="250"
@@ -80,18 +79,8 @@ export default {
         }
     },
     methods:{
-        refresh2:function(){
-            axios.get('/api/v2/resources/users/trackers').then(res=>{
-                console.log(res.data['trackers'])
-                let tracker_list = res.data['trackers']
-                //this.trackerList = tracker_list
-                this.$store.dispatch("trackers/UpdateTrackerList",tracker_list)                
-            }).catch(err=>{
-                console.log(err)
-            })
-        },
         refresh:function(){
-            axios.get('/api/v1/resources/users/trackers').then(res=>{
+            axios.get('/api/v2/resources/users/trackers').then(res=>{
                 
                 console.log(res.data['trackers'])
                 let tracker_list = res.data['trackers']

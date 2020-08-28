@@ -16,6 +16,19 @@
       </el-row>
     </div>
 
+    <el-row>
+      <el-col>
+        <el-select placeholder="目標" v-model="select_value">
+          <el-option
+            v-for="(m,index) in trackers"
+            :label="m"
+            :value="m"
+            :key="index">
+          </el-option>
+        </el-select>
+      </el-col>
+    </el-row>
+
     <GmapMap
       ref="map"
       :center="{lat:23.696413, lng:120.532343}"
@@ -23,29 +36,30 @@
       map-type-id="terrain"
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
-      <div v-for="(m,index) in markers" :key="index">
-        <gmap-custom-marker :marker="m.current_position" alignment="center" :class="circle_animation" >
-          <el-avatar :size="50">{{m.user.name}}</el-avatar>
-        </gmap-custom-marker>
-        
-
-        <!-- Gmap circle(fences) -->
-        <GmapCircle
+      <div v-if="marker_load">
+        <gmap-custom-marker 
+          
+          :marker="CurrentMarker.current_position" 
+          alignment="center" 
+          @click.native="MarkerEvent"
+          :class="circle_animation" >
+          <el-avatar :size="50">123</el-avatar>
+        </gmap-custom-marker>  
+    
+        <GmapCircle 
           :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
-          :center="m.fences_position"
+          :center="CurrentMarker.fence_position"
           :class="circle_animation"
-          :radius="m.f_radius">
+          :radius="CurrentMarker.fence_radius">
         </GmapCircle>
-        <!-- Gmap circle(user position) -->
+  
         <GmapCircle
           :options="{fillColor:'#0000ff',fillOpacity:0.4,strokeColor:'#0000ff',strokeOpacity:0.4}"
-          :center="m.current_position"
-          :radius="m.radius">
+          :center="CurrentMarker.current_position"
+          :radius="CurrentMarker.radius">
         </GmapCircle>
-
       </div>
-      <GmapPolyline 
-          
+      <!-- <GmapPolyline 
           v-if="smoth_road"
           :path.sync="smoth_road"
           v-bind:options="{ 
@@ -63,7 +77,7 @@
                 
               }]
             }">
-      </GmapPolyline>
+      </GmapPolyline> -->
     </GmapMap>
   </div>
 </template>
@@ -76,17 +90,23 @@
   import axios from 'axios'
   import {gmapApi} from 'vue2-google-maps'
   import {GetAllMarkers} from '@/apis/map.js'
+
   export default {
     components:{
       'gmap-custom-marker': GmapCustomMarker
     },
     computed:{
-      google:gmapApi
+      google:gmapApi,
+      CurrentMarker:function(){
+        return this.markers[this.select_value]
+      }
     },
     created(){
-      GetAllMarkers().then(res=>{
-        console.log(res)
+      GetAllMarkers().then(res=>{ 
         this.markers = res.data.markers 
+        this.trackers = Object.keys(res.data.markers)  
+        this.select_value = this.trackers[0]
+        this.marker_load = true
       }).catch(err=>{
         console.log(err)
       })
@@ -94,14 +114,14 @@
     },
     data() {
       return {
+        select_value:'',
         markers:null,
+        marker_load:null,
+        trackers:null,
         roads:null,
         smoth_road:null,
         marker_animation:'animate__animated animate__bounce animate__infinite	infinite',
         circle_animation:'animate__animated animate__pulse animate__infinite	infinite',
-        path2:[
-          {"lat": 23.690079, "lng": 120.535701},{"lat": 23.690023, "lng": 120.535427}
-        ],
       }
     },
     methods:{
@@ -113,6 +133,9 @@
         }).catch(err=>{
           console.log(err)
         })
+      },
+      MarkerEvent:function(){
+        window.alert('click marker')
       }
     }
   }

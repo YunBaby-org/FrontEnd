@@ -15,6 +15,7 @@
     "element-ui": "^2.13.2",
     "express": "^4.17.1",
     "js-cookie": "^2.2.1",
+    "marker-clusterer-plus": "^2.1.4",
     "mockjs": "^1.1.0",
     "mockjs-async": "0.0.5",
     "normalize.css": "^8.0.1",

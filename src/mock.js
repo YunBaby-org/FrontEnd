@@ -20,65 +20,65 @@ Mock.mock('/api/v1/resources/users/information','get',async()=>{
         "email":"azsx26735546@gmail.com"
     }
 })
-Mock.mock('/api/v2/resources/users/trackers','get',async()=>{
-    await new Promise(resolve=>{
-        setTimeout(()=>{
-            console.log('timeout')
-            resolve()
-        },3000)
-    })
-    return {
-        "trackers":[
-            {
-                "name":"邱品峰",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579955"
-            },
-            {
-                "name":"安安安",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579947"
-            }
-        ]
-    }
-})
-Mock.mock('/api/v1/resources/users/trackers','get',async()=>{
-    await new Promise(resolve=>{
-        setTimeout(()=>{
-            console.log('timeout')
-            resolve()
-        },3000)
-    })
-    return {
-        "trackers":[
-            {
-                "name":"邱品峰",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579955"
-            },
-            {
-                "name":"邱品峰2",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579947"
-            },
-            {
-                "name":"邱品峰3",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579956"
-            },
-            {
-                "name":"邱品峰4",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579978"
-            },
-            {
-                "name":"邱品峰5",
-                "email":"azsx26735546@gmail.com",
-                "phone":"0905579912"
-            }
-        ]
-    }
-})
+// Mock.mock('/api/v2/resources/users/trackers','get',async()=>{
+//     await new Promise(resolve=>{
+//         setTimeout(()=>{
+//             console.log('timeout')
+//             resolve()
+//         },3000)
+//     })
+//     return {
+//         "trackers":[
+//             {
+//                 "name":"邱品峰",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579955"
+//             },
+//             {
+//                 "name":"安安安",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579947"
+//             }
+//         ]
+//     }
+// })
+// Mock.mock('/api/v1/resources/users/trackers','get',async()=>{
+//     await new Promise(resolve=>{
+//         setTimeout(()=>{
+//             console.log('timeout')
+//             resolve()
+//         },3000)
+//     })
+//     return {
+//         "trackers":[
+//             {
+//                 "name":"邱品峰",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579955"
+//             },
+//             {
+//                 "name":"邱品峰2",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579947"
+//             },
+//             {
+//                 "name":"邱品峰3",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579956"
+//             },
+//             {
+//                 "name":"邱品峰4",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579978"
+//             },
+//             {
+//                 "name":"邱品峰5",
+//                 "email":"azsx26735546@gmail.com",
+//                 "phone":"0905579912"
+//             }
+//         ]
+//     }
+// })
 Mock.mock('/user/path/toby5500','get',()=>{
     return {
         "path":[
@@ -109,43 +109,93 @@ Mock.mock('/user/path/toby5500','get',()=>{
         ]
     }
 })
-Mock.mock('/user/locations','get',()=>{
+Mock.mock('/api/v2/resources/users/trackers','get',()=>{
     return {
-        "markers":[
+        "trackers":[
             {   
-                "user":{
-                    "userid":"test1id",
-                    "name":"test1"
-                },
-                "current_position":{
-                    "lat":23.693979,
-                    "lng":120.530708
-                },
-                "fences_position":{
-                    "lat":23.693979,
-                    "lng":120.530708
-                },
-                "radius":20,
-                "f_radius":30
-
+                "userid":"test1id",
+                "name":"name1",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579955"
             },
-            {
-                "user":{
-                    "userid":"test2id",
-                    "name":"test2"
-                },
-                "current_position":{
-                    "lat":23.696344,
-                    "lng":120.532068
-                },
-                "fences_position":{
-                    "lat":23.696344,
-                    "lng":120.532068
-                },
-                "radius":20,
-                "f_radius":50
-            }
+            {   
+                "userid":"test2id",
+                "name":"name2",
+                "email":"azsx26735546@gmail.com",
+                "phone":"0905579947"
+            },
         ]
     }
 })
+Mock.mock('/user/locations','get',()=>{
+    return {
+        "markers":{
+            "test1id":{
+                "name":"name1",
+                "current_position":{
+                    "lat":23.693979,
+                    "lng":120.530708
+                },
+                "radius":20,
+                "fence_position":{
+                    "lat":23.693979,
+                    "lng":120.530708
+                },
+                "fence_radius":30
+            },
+            "test2id":{
+                "name":"name2",
+                "current_position":{
+                    "lat":23.696344,
+                    "lng":120.532068
+                },
+                "radius":20,
+                "fence_position":{
+                    "lat":23.696344,
+                    "lng":120.532068
+                },
+                "fence_radius":50
+            },            
+        }
+    }
+})
+// Mock.mock('/user/locations','get',()=>{
+//     return {
+//         "markers":[
+//             {   
+//                 "user":{
+//                     "userid":"test1id",
+//                     "name":"name1"
+//                 },
+//                 "current_position":{
+//                     "lat":23.693979,
+//                     "lng":120.530708
+//                 },
+//                 "fences_position":{
+//                     "lat":23.693979,
+//                     "lng":120.530708
+//                 },
+//                 "radius":20,
+//                 "f_radius":30
+
+//             },
+//             {
+//                 "user":{
+//                     "userid":"test2id",
+//                     "name":"name2"
+//                 },
+//                 "current_position":{
+//                     "lat":23.696344,
+//                     "lng":120.532068
+//                 },
+//                 "fences_position":{
+//                     "lat":23.696344,
+//                     "lng":120.532068
+//                 },
+//                 "radius":20,
+//                 "f_radius":50
+//             }
+//         ]
+//     }
+// })
 
