@@ -63,8 +63,10 @@
 
         </el-card>
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
+            <h2>目標: {{temp_marker_userinfo.username}} 目標id: {{temp_marker_userinfo.userid}}</h2>
             <el-input-number v-model="temp_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
             <el-button type="primary" style="margin-bottom:5px; width:100%;">更新</el-button>
+        
             <GmapMap
                 ref="map"
                 @click="ClickEvent"
@@ -106,7 +108,8 @@ export default {
             dialog_delete:false,
             marker_clicked:false,
             temp_marker_position:null, //選擇boundary所在位置的那個marker
-            temp_marker_radius:0 //選擇boundary的半徑   
+            temp_marker_radius:0, //選擇boundary的半徑   
+            temp_marker_userinfo:{}
         }
     },
     computed:{
@@ -122,6 +125,7 @@ export default {
             this.marker_clicked = false 
             this.temp_marker_position = null 
             this.temp_marker_radius = 0
+            this.temp_marker_userinfo = {}
         },
         ClickEvent:function(event){
             console.log(this.google)
@@ -156,8 +160,14 @@ export default {
         },
         EditBoundary(index, row) {
             console.log(index, row)
+            console.log(row)
             this.dialog_boundary = true 
-            
+            this.temp_marker_userinfo = {
+                userid:row.userid,
+                username:row.name,
+                phone:row.phone,
+                email:row.email
+            }
         },
         DeleteTracker(index, row) {
             console.log(index, row)

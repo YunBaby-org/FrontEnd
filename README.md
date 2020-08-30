@@ -30,3 +30,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 > using google roads api to snap the road
 
 ![](https://i.imgur.com/KJvUivr.png)
+
+## add tracker view 
+![](https://i.imgur.com/C82MZqe.png)
+
+## update tracker's boundary 
+> user can input any boundary radius 
+![](https://i.imgur.com/1Rs6Z05.png)
