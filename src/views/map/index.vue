@@ -15,41 +15,37 @@
         </el-col>
       </el-row>
     </div>
+    <el-select placeholder="目標" v-model="select_value" @change="SelectChange" style="width:100%; margin-bottom:10px;">
+      <el-option
+        v-for="(m,index) in trackers"
+        :label="m"
+        :value="m"
+        :key="index">
+      </el-option>
+    </el-select>
 
-    <el-row>
-      <el-col>
-        <el-select placeholder="目標" v-model="select_value">
-          <el-option
-            v-for="(m,index) in trackers"
-            :label="m"
-            :value="m"
-            :key="index">
-          </el-option>
-        </el-select>
-      </el-col>
-    </el-row>
 
     <GmapMap
       ref="map"
-      :center="{lat:23.696413, lng:120.532343}"
+      :center="MapCenter"
       :zoom="18"
       map-type-id="terrain"
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
-      <div v-if="marker_load">
+      <div v-if="marker_loading">
         <gmap-custom-marker 
           
           :marker="CurrentMarker.current_position" 
           alignment="center" 
           @click.native="MarkerEvent"
-          :class="circle_animation" >
+          :class="pulse_animation" >
           <el-avatar :size="50">123</el-avatar>
         </gmap-custom-marker>  
     
         <GmapCircle 
           :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
           :center="CurrentMarker.fence_position"
-          :class="circle_animation"
+          :class="pulse_animation"
           :radius="CurrentMarker.fence_radius">
         </GmapCircle>
   
@@ -99,29 +95,36 @@
       google:gmapApi,
       CurrentMarker:function(){
         return this.markers[this.select_value]
+      },
+      MapCenter:function(){
+        if (this.marker_loading == null)
+          return this.map_default_center 
+        
+        return this.markers[this.select_value].fence_position
       }
     },
     created(){
       GetAllMarkers().then(res=>{ 
         this.markers = res.data.markers 
-        this.trackers = Object.keys(res.data.markers)  
-        this.select_value = this.trackers[0]
-        this.marker_load = true
+        this.trackers = Object.keys(this.markers)  
       }).catch(err=>{
         console.log(err)
       })
-      
+      console.log(null||"asd")
     },
     data() {
       return {
-        select_value:'',
+        map_default_center:{
+          lat:23.696413,
+          lng:120.532343
+        },
+        select_value:'請選擇目標',
         markers:null,
-        marker_load:null,
+        marker_loading:null,
         trackers:null,
         roads:null,
-        smoth_road:null,
         marker_animation:'animate__animated animate__bounce animate__infinite	infinite',
-        circle_animation:'animate__animated animate__pulse animate__infinite	infinite',
+        pulse_animation:'animate__animated animate__pulse animate__infinite	infinite',
       }
     },
     methods:{
@@ -136,6 +139,9 @@
       },
       MarkerEvent:function(){
         window.alert('click marker')
+      },
+      SelectChange:function(){
+        this.marker_loading = true
       }
     }
   }
