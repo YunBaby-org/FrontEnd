@@ -17,7 +17,7 @@
     </div>
     <el-select placeholder="目標" v-model="select_value" @change="SelectChange" style="width:100%; margin-bottom:10px;">
       <el-option
-        v-for="(m,index) in trackers"
+        v-for="(m,index) in tracker_list"
         :label="m"
         :value="m"
         :key="index">
@@ -101,16 +101,10 @@
           return this.map_default_center 
         
         return this.markers[this.select_value].fence_position
+      },
+      tracker_list:function(){
+        return this.$store.getters.trackerList
       }
-    },
-    created(){
-      GetAllMarkers().then(res=>{ 
-        this.markers = res.data.markers 
-        this.trackers = Object.keys(this.markers)  
-      }).catch(err=>{
-        console.log(err)
-      })
-      console.log(null||"asd")
     },
     data() {
       return {
@@ -121,7 +115,6 @@
         select_value:'請選擇目標',
         markers:null,
         marker_loading:null,
-        trackers:null,
         roads:null,
         marker_animation:'animate__animated animate__bounce animate__infinite	infinite',
         pulse_animation:'animate__animated animate__pulse animate__infinite	infinite',
@@ -141,9 +134,23 @@
         window.alert('click marker')
       },
       SelectChange:function(){
+        console.log('selection change')
+        /*
+          selection被選到特定的trakcer時
+          向後端請求該trakcer的電子圍籬資訊
+        */
         this.marker_loading = true
       }
-    }
+    },
+    created(){
+      /* just need tracker's boundary position */
+      GetAllMarkers().then(res=>{ 
+        this.markers = res.data.markers 
+      }).catch(err=>{
+        console.log(err)
+      })
+      console.log(null||"asd")
+    },
   }
 </script>
 <style scoped>

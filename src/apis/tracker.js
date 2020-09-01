@@ -10,8 +10,21 @@ export function GetAllTrackers(){
     }
     return request(config)
 }
+
+export function UpdateAllTrackers(store){
+    GetAllTrackers().then(res=>{
+        console.log(res.data['trackers'])
+        console.log(Object.keys(res.data['trackers']))
+        
+        store.dispatch("trackers/UpdateTrackers",res.data['trackers'])
+        store.dispatch("trackers/UpdateTrackerList",Object.keys(res.data['trackers']))
+    }).catch(err=>{
+        console.log('-------Get all trackers Error-------')
+        console.log(err)
+    })
+}
 export function AddTracker(){
-    let api_url = '/api/v2/resources/'
+    //let api_url = '/api/v2/resources/'
 
 }
 export function UpdateBoundary(){
@@ -20,7 +33,5 @@ export function UpdateBoundary(){
         url:api_url,
         method:'PUT'
     }
-}
-export function UpdateTracker(){
-
+    return request(config)
 }

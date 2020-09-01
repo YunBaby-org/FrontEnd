@@ -29,10 +29,10 @@
             <div slot="header" style="text-align:center;">
                 <h1>追蹤清單</h1>
             </div>
-            <el-button @click="refresh" type="primary" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
+            <el-button @click="UpdateTrackers" type="primary" icon="el-icon-refresh" circle style="margin-bottom:15px;"></el-button>
             <el-table
                 style="width:100%"
-                :data="trackerList"
+                :data="trackersInfo"
                 height="250"
                 border>
                 <el-table-column
@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import axios from 'axios'
 import {gmapApi} from 'vue2-google-maps'
+import {UpdateAllTrackers} from '@/apis/tracker.js'
 export default {
     data:function(){
         return {
@@ -114,8 +114,11 @@ export default {
     },
     computed:{
         google:gmapApi,
-        trackerList:function(){
-            return this.$store.getters.trackerList
+        trackersInfo:function(){
+            /*  return all trackers information from vuex   */
+            console.log(this.$store.getters.trackersInfo)
+            console.log(Object.values(this.$store.getters.trackersInfo))
+            return Object.values(this.$store.getters.trackersInfo)
         }
     },
     methods:{
@@ -140,24 +143,23 @@ export default {
                 this.temp_marker_position = click_position
             })
         },
+
+        /*  tracker's function   */
         AddTracker:async function(){
             //put data to the server 
 
         },
+        DeleteTracker(index, row) {
+            console.log(index, row)
+            this.dialog_delete = true
+        },
         UpdateTrackers:function(){
+            console.log('update trackers')
             //GetAllTrackers again 
+            UpdateAllTrackers(this.$store)
         },
-        refresh:function(){
-            axios.get('/api/v2/resources/users/trackers').then(res=>{
-                
-                console.log(res.data['trackers'])
-                let tracker_list = res.data['trackers']
-                //this.trackerList = tracker_list
-                this.$store.dispatch("trackers/UpdateTrackerList",tracker_list)
-            }).catch(err=>{
-                console.log(err)
-            })
-        },
+
+        /*  boundary function   */
         EditBoundary(index, row) {
             console.log(index, row)
             console.log(row)
@@ -168,12 +170,8 @@ export default {
                 phone:row.phone,
                 email:row.email
             }
-        },
-        DeleteTracker(index, row) {
-            console.log(index, row)
-            this.dialog_delete = true
         }
-    },
+    }
     
 }
 </script>

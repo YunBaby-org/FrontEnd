@@ -20,44 +20,53 @@ import sidebar from './components/sidebar/index.vue'
 import navbar from './components/navbar'
 import MainContent from './components/MainContent'
 import ResizeMixin from './mixin/resizehandle'
+import {UpdateAllTrackers} from '@/apis/tracker.js'
 export default {
-    name:"layout",
-    mixins:[ResizeMixin],
-    data:function(){
-        return {
-            show:false
-        }
+  name:"layout",
+  mixins:[ResizeMixin],
+  data:function(){
+    return {
+      show:false
+    }
+  },
+  components:{
+    sidebar,
+    navbar,
+    MainContent
+  },
+  computed:{
+    device:function(){
+      return this.$store.state.app.device
     },
-    components:{
-        sidebar,
-        navbar,
-        MainContent
-
+    sidebar:function(){
+      return this.$store.state.app.sidebar
     },
-    computed:{
-        device:function(){
-          return this.$store.state.app.device
-        },
-        sidebar:function(){
-          return this.$store.state.app.sidebar
-        },
-        fixedheader:function(){
-            return true 
-        },
-        ResizeSidebar:function(){
-          return{
-            hideSidebar: !this.sidebar.open,//如果這個為true，class就會後綴一個hidesidebar，就可以達到隱藏sidebar的功能
-            openSidebar: this.sidebar.open,
-            withoutAnimation: this.sidebar.withoutAnimation,
-            mobile: this.device === 'mobile'
-          }
-        }
+    fixedheader:function(){
+      return true 
     },
-    methods:{
-      handleClickOutside() {
-        this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    ResizeSidebar:function(){
+      return{
+        hideSidebar: !this.sidebar.open,//如果這個為true，class就會後綴一個hidesidebar，就可以達到隱藏sidebar的功能
+        openSidebar: this.sidebar.open,
+        withoutAnimation: this.sidebar.withoutAnimation,
+        mobile: this.device === 'mobile'
       }
     }
+  },
+  methods:{
+    handleClickOutside() {
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    }
+  },
+  created(){
+    /*
+      在這邊先request所有tracker的資訊
+      並將這些資訊儲存進vuex 
+      之後切換到 map,add....這些view的時候,就可以直接從vuex取得資料
+    */
+    UpdateAllTrackers(this.$store)
+
+  }
 }
 </script>
 
