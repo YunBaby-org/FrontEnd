@@ -65,7 +65,7 @@
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <h2>目標: {{temp_marker_userinfo.username}} 目標id: {{temp_marker_userinfo.userid}}</h2>
             <el-input-number v-model="temp_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
-            <el-button type="primary" style="margin-bottom:5px; width:100%;">更新</el-button>
+            <el-button type="primary" @click="AddTracker" style="margin-bottom:5px; width:100%;">更新</el-button>
         
             <GmapMap
                 ref="map"
@@ -92,7 +92,7 @@
 
 <script>
 import {gmapApi} from 'vue2-google-maps'
-import {UpdateAllTrackers} from '@/apis/tracker.js'
+import {UpdateAllTrackers,AddTracker} from '@/apis/tracker.js'
 export default {
     data:function(){
         return {
@@ -147,7 +147,7 @@ export default {
         /*  tracker's function   */
         AddTracker:async function(){
             //put data to the server 
-
+            AddTracker(this.target_form)
         },
         DeleteTracker(index, row) {
             console.log(index, row)

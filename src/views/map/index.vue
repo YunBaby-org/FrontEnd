@@ -23,7 +23,7 @@
         :key="index">
       </el-option>
     </el-select>
-
+    <el-button style="width:100%; margin-bottom:10px;" @click="StartTracking">開啟追蹤</el-button>
 
     <GmapMap
       ref="map"
@@ -34,46 +34,56 @@
       :options="{mapTypeControl:false}">
       <div v-if="marker_loading">
         <gmap-custom-marker 
-          
           :marker="CurrentMarker.current_position" 
           alignment="center" 
           @click.native="MarkerEvent"
-          :class="pulse_animation" >
+          :class="bounce_animation" >
           <el-avatar :size="50">123</el-avatar>
         </gmap-custom-marker>  
-    
-        <GmapCircle 
-          :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
-          :center="CurrentMarker.fence_position"
-          :class="pulse_animation"
-          :radius="CurrentMarker.fence_radius">
-        </GmapCircle>
+
+        <GmapInfoWindow
+          :opened="info_window"
+          @closeclick="InfoWindowClose"
+          :position="CurrentMarker.current_position">
+          lat: {{target.lat}} lng: {{target.lng}}
+        </GmapInfoWindow>
   
         <GmapCircle
           :options="{fillColor:'#0000ff',fillOpacity:0.4,strokeColor:'#0000ff',strokeOpacity:0.4}"
           :center="CurrentMarker.current_position"
           :radius="CurrentMarker.radius">
         </GmapCircle>
+
+        <!-- test fake data -->
+        <GmapMarker
+          :position='target'>
+        </GmapMarker>
+
+        <GmapCircle 
+          :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
+          :center="current_boundary"
+          :radius="boundary_radius">
+        </GmapCircle>
+        <GmapPolyline 
+            :path="roads"
+            v-bind:options="{ 
+              strokeColor:'#00ff00',
+              strokeWeight:8,
+              strokeOpacity:0.8,
+              icons:[{
+                icon:{
+                  path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  fillColor: '#22bf15',
+                  strokeColor: '#22bf15',
+                  scale:4,
+                  fillOpacity:1
+                  },
+                  
+                }]
+              }">
+        </GmapPolyline>
       </div>
-      <!-- <GmapPolyline 
-          v-if="smoth_road"
-          :path.sync="smoth_road"
-          v-bind:options="{ 
-            strokeColor:'#00ff00',
-            strokeWeight:8,
-            strokeOpacity:0.8,
-            icons:[{
-              icon:{
-                path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                fillColor: '#22bf15',
-                strokeColor: '#22bf15',
-                scale:4,
-                fillOpacity:1
-                },
-                
-              }]
-            }">
-      </GmapPolyline> -->
+
     </GmapMap>
   </div>
 </template>
@@ -83,10 +93,10 @@
 
 <script>
   import GmapCustomMarker from 'vue2-gmap-custom-marker';
-  import axios from 'axios'
   import {gmapApi} from 'vue2-google-maps'
   import {GetAllMarkers} from '@/apis/map.js'
-
+  import {GetBoundaryPosition} from '@/apis/boundary.js'
+  import {CreateStompClient} from '@/utils/stompclient.js'
   export default {
     components:{
       'gmap-custom-marker': GmapCustomMarker
@@ -97,13 +107,17 @@
         return this.markers[this.select_value]
       },
       MapCenter:function(){
-        if (this.marker_loading == null)
+        if (!this.marker_loading)
           return this.map_default_center 
-        
-        return this.markers[this.select_value].fence_position
+        return this.current_boundary
       },
+      /* get trakcer list */
       tracker_list:function(){
         return this.$store.getters.trackerList
+      },
+      /*  get current tracker */ 
+      tracker:function(){
+        return this.$store.getters.trackersInfo[this.select_value] 
       }
     },
     data() {
@@ -112,35 +126,64 @@
           lat:23.696413,
           lng:120.532343
         },
+        info_window:false,
         select_value:'請選擇目標',
+        target:{
+          lat:0,
+          lng:0
+        },
+        current_boundary:{
+          lat:0,
+          lng:0
+        },
+        stomp_client:null,
+        boundary_radius:0,
         markers:null,
-        marker_loading:null,
-        roads:null,
-        marker_animation:'animate__animated animate__bounce animate__infinite	infinite',
+        marker_loading:false,
+        roads:[],
+        bounce_animation:'animate__animated animate__bounce animate__infinite	infinite',
         pulse_animation:'animate__animated animate__pulse animate__infinite	infinite',
       }
     },
     methods:{
-      GetRoad:function(){
-        axios.get('/user/path/toby5500').then(res=>{
-          this.roads = res.data.path
-          console.log(this.roads)
-          this.RoadApi()
-        }).catch(err=>{
-          console.log(err)
-        })
-      },
+
+      /*  marker click event  */
       MarkerEvent:function(){
-        window.alert('click marker')
+        this.info_window = true
       },
+
+      /*  select event  */
       SelectChange:function(){
+        this.marker_loading = true
         console.log('selection change')
         /*
+          Todo: 
           selection被選到特定的trakcer時
           向後端請求該trakcer的電子圍籬資訊
         */
-        this.marker_loading = true
+        GetBoundaryPosition(this.select_value).then(res=>{
+          this.current_boundary = {lat:parseFloat(res.data.boundary.lat),lng:parseFloat(res.data.boundary.lng)}
+          this.boundary_radius = res.data.boundary.radius
+        })
+      },
+
+      /*  marker infowindow close event */
+      InfoWindowClose:function(){
+        this.info_window = false
+      },
+      /*  tracking target */
+      StartTracking:function(){
+        console.log(this.stomp_client)
+        this.stomp_client.subscribe('/queue/test123',(msg)=>{
+          console.log(typeof(JSON.parse(msg.body)))
+          this.target.lat = JSON.parse(msg.body).lat 
+          this.target.lng = JSON.parse(msg.body).lng
+          this.roads.push({lat:this.target.lat,lng:this.target.lng})
+     
+        })
+
       }
+
     },
     created(){
       /* just need tracker's boundary position */
@@ -149,8 +192,8 @@
       }).catch(err=>{
         console.log(err)
       })
-      console.log(null||"asd")
-    },
+      this.stomp_client = CreateStompClient()
+    }
   }
 </script>
 <style scoped>

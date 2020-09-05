@@ -34,82 +34,55 @@
 
 
 <script>
-import axios from 'axios'
+
 import {UserLogin} from '@/apis/user'
 
 export default {
-    data:function(){
-        const ValidEmail = (rule,value,callback)=>{
-            callback()
-        }
-        const ValidPassword = (rule,value,callback)=>{
-            if(value.length<6){
-                callback(new Error('密碼長度必須大於6個字元'))
-            }
-            else{
-                callback()
-            }
-        }
-        return {
-            LoginInfo:{
-                email:"",
-                password:""
-            },
-            LoginRules:{
-                email:[{validator:ValidEmail}],
-                password:[{validator:ValidPassword}]
-            },
-            fullscreenLoading:false
-        }
-    },
-    methods:{
-      post2:function(){
-        axios.defaults.withCredentials = true
-        axios.post('http://140.125.205.78:5001/auth/testing',{},{withCredentials:true}).then(res=>{
-          console.log(res)
-        })
-      },
-      test:async function(){
-        this.loading = true 
-        console.log('1')
-        console.log(this.loading)
-        let response = await this.post()
-        console.log(response)
-        console.log('3')
-      },
-      post:function(){
-        let data = {
-          "email":'azsx26735546@gmail.com',
-          "password":"P499UYCB"
-        }
-        axios.defaults.withCredentials = true
-        axios.post('http://140.125.205.78:5001/auth/login',data,{withCredentials:true}).then(res=>{
-          console.log(res)
-        }).catch(err=>{
-          console.log(err.response)
-        })
-
-      },
-      HandleLogin:async function(){
-        this.fullscreenLoading = true
-        let data = {
-          "email":this.LoginInfo.email,
-          "password":this.LoginInfo.password
-        }
-        await UserLogin(data).then(res=>{
-          console.log('this is response')
-          console.log(res)
-          console.log(res.status)
-          
-        }).catch(err=>{
-          console.log('this catch ')
-          console.log(err.response)
-        })
-    
-        this.fullscreenLoading = false
-
+  data:function(){
+    const ValidEmail = (rule,value,callback)=>{
+      callback()
+    }
+    const ValidPassword = (rule,value,callback)=>{
+      if(value.length<6){
+        callback(new Error('密碼長度必須大於6個字元'))
+      }
+      else{
+        callback()
       }
     }
+    return {
+      LoginInfo:{
+        email:"",
+        password:""
+      },
+      LoginRules:{
+        email:[{validator:ValidEmail}],
+        password:[{validator:ValidPassword}]
+      },
+      fullscreenLoading:false
+    }
+  },
+  methods:{
+    HandleLogin:async function(){
+      this.fullscreenLoading = true
+      let data = {
+        "email":this.LoginInfo.email,
+        "password":this.LoginInfo.password
+      }
+      await UserLogin(data).then(res=>{
+        console.log('this is response')
+        console.log(res)
+        console.log(res.status)
+          
+      }).catch(err=>{
+        console.log('this catch ')
+        console.log(err.response)
+      })
+    
+      this.fullscreenLoading = false
+
+    }
+  }
 }
 </script>
 

@@ -1,7 +1,6 @@
 import request from '../utils/request'
 
 //const base_url = process.env.VUE_APP_BASE_URL
-//api_url = base_url + .......
 export function GetAllTrackers(){
     let api_url = '/api/v2/resources/users/trackers'
     let config = {
@@ -13,9 +12,6 @@ export function GetAllTrackers(){
 
 export function UpdateAllTrackers(store){
     GetAllTrackers().then(res=>{
-        console.log(res.data['trackers'])
-        console.log(Object.keys(res.data['trackers']))
-        
         store.dispatch("trackers/UpdateTrackers",res.data['trackers'])
         store.dispatch("trackers/UpdateTrackerList",Object.keys(res.data['trackers']))
     }).catch(err=>{
@@ -23,9 +19,15 @@ export function UpdateAllTrackers(store){
         console.log(err)
     })
 }
-export function AddTracker(){
-    //let api_url = '/api/v2/resources/'
-
+export function AddTracker(data){
+    let api_url = '/api/v1/resources/users/addtracker'
+    let config = {
+        url:api_url,
+        method:'POST',
+        data
+    }
+    
+    return request(config)
 }
 export function UpdateBoundary(){
     let api_url = '/api/v1/resources/users/boundary'

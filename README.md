@@ -10,6 +10,13 @@ npm install
 npm run serve
 ```
 
+### .env 
+VUE_APP_BASE_URL = http://140.125.205.78
+VUE_APP_GMAP_API = 'google map api key'
+VUE_APP_ROAD_API = 'gooogle map road api key'
+VUE_APP_AMQP_USER = test 
+VUE_APP_AMQP_PASSWORD = test
+
 ### Compiles and minifies for production
 ```
 npm run build

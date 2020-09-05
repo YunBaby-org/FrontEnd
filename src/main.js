@@ -10,8 +10,8 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import GmapCluster from "vue2-google-maps/dist/components/cluster"
 import 'animate.css'
 
-require('./mock')
-import './permission.js'
+//require('./mock')
+//import './permission.js'
 
 
 

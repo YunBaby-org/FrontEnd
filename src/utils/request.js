@@ -1,27 +1,20 @@
 import axios from 'axios'
-//import {Message} from 'element-ui'
+
 axios.defaults.withCredentials = true;
-/*
-    create error handler 
-*/
-// const ErrorHandler = (msg)=>{
-    
-//     Message.error(msg)
-    
-// }
+
 /*
     create axios instance 
 */
 
 /* declare const */
 const axios_instance = axios.create({
-    baseURL:process.env.BASE_API_URL,
+    //baseURL:process.env.VUE_APP_BASE_URL,
     timeout:5000
 })
 
 /*
     set request interceptors 
-    簡單來說就是送到http request前會先來這邊
+    送到http request前會先來這邊
     可以再這邊做一些加上token的動作
 */
 
@@ -35,7 +28,7 @@ axios_instance.interceptors.request.use((config)=>{
 
 /*
     set response interceptores 
-    簡單來說就是收到http response後會先來這邊，再到使用者那邊
+    收到http response後會先來這邊，再到使用者那邊
 */
 axios_instance.interceptors.response.use((response)=>{
     return response
