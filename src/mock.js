@@ -8,6 +8,7 @@ Mock.mock('/api/v1/resources/users/me','get',async()=>{
         "message":"fucking error",
     }
 })
+
 Mock.mock('/api/v1/resources/users/information','get',async()=>{
     await new Promise(resolve=>{
         setTimeout(()=>{
@@ -21,6 +22,17 @@ Mock.mock('/api/v1/resources/users/information','get',async()=>{
     }
 })
 
+Mock.mock('/authorizecode','get',async()=>{
+    await new Promise(resolve=>{
+        setTimeout(()=>{
+            console.log('timeout')
+            resolve()
+        },3000)
+    })
+    return {
+        "code":"aongoianoiqngioqpgnoqignqgbqg",
+    }
+})
 
 Mock.mock('/api/v2/resources/users/trackers','get',()=>{
     return {

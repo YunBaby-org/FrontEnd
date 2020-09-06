@@ -62,6 +62,15 @@
             </el-table>      
 
         </el-card>
+
+        <!-- QRCODE diaglog -->
+        <el-dialog title="請掃描QRCODE" :visible.sync="dialog_qrcode" width="80%" @close="DialogClose">
+            <center v-loading="loading">
+                <qrcode v-if="dialog_qrcode_ok" :value="dialog_qrcode_data" :options="{ width: QrcodeWidth }"></qrcode>
+            </center>        
+        </el-dialog>
+
+        <!-- setting boundary dialog  -->
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <h2>目標: {{temp_marker_userinfo.username}} 目標id: {{temp_marker_userinfo.userid}}</h2>
             <el-input-number v-model="temp_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
@@ -93,9 +102,12 @@
 <script>
 import {gmapApi} from 'vue2-google-maps'
 import {UpdateAllTrackers,AddTracker} from '@/apis/tracker.js'
+import axios from 'axios'
+
 export default {
     data:function(){
         return {
+            loading:false,
             target_form:{
                 "email":null,
                 "password":null
@@ -104,8 +116,16 @@ export default {
                 lat:23.696413,
                 lng:120.532343
             },
+            
             dialog_boundary:false,
             dialog_delete:false,
+
+            // QRCODE data 
+            dialog_qrcode:false,
+            dialog_qrcode_ok:false,
+            dialog_qrcode_data:'',
+
+            
             marker_clicked:false,
             temp_marker_position:null, //選擇boundary所在位置的那個marker
             temp_marker_radius:0, //選擇boundary的半徑   
@@ -119,6 +139,12 @@ export default {
             console.log(this.$store.getters.trackersInfo)
             console.log(Object.values(this.$store.getters.trackersInfo))
             return Object.values(this.$store.getters.trackersInfo)
+        },
+        QrcodeWidth:function(){
+            if(document.body.clientWidth > 1000)
+                return 600 
+            
+            return document.body.clientWidth - 100 
         }
     },
     methods:{
@@ -129,6 +155,11 @@ export default {
             this.temp_marker_position = null 
             this.temp_marker_radius = 0
             this.temp_marker_userinfo = {}
+            this.dialog_boundary = false 
+
+            // reset QRCODE status 
+            this.dialog_qrcode_ok = false 
+            this.dialog_qrcode = false 
         },
         ClickEvent:function(event){
             console.log(this.google)
@@ -146,8 +177,23 @@ export default {
 
         /*  tracker's function   */
         AddTracker:async function(){
-            //put data to the server 
+
+            // send tracker info to REST API 
             AddTracker(this.target_form)
+
+
+            this.loading = true //loading  
+            this.dialog_qrcode = true // open QRCODE dialog 
+
+            // Backend GET tracker Auth code 
+            await axios.get('/authorizecode').then((res)=>{
+                console.log(res)
+                this.dialog_qrcode_data = res.data.code //assing QRCODE value
+            })
+            this.loading = false 
+            this.dialog_qrcode_ok = true //QRCODE data ready 
+
+            
         },
         DeleteTracker(index, row) {
             console.log(index, row)

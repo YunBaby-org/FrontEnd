@@ -29,7 +29,6 @@ router.beforeEach(async(to,from,next)=>{
         console.log(err)
 
         // redirect to login page 
-
         if(to.path!=='/login'){
             next('/login')
         }
