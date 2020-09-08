@@ -27,43 +27,48 @@
 
     <GmapMap
       ref="map"
-      :center="MapCenter"
+      :center="map_default_center"
       :zoom="18"
       map-type-id="terrain"
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
       <div v-if="marker_loading">
+
+<!-- 
         <gmap-custom-marker 
-          :marker="CurrentMarker.current_position" 
+          :marker="target" 
           alignment="center" 
           @click.native="MarkerEvent"
           :class="bounce_animation" >
           <el-avatar :size="50">123</el-avatar>
-        </gmap-custom-marker>  
+        </gmap-custom-marker>   -->
+        <GmapMarker
+          @click="MarkerEvent"
+          :position="target">
 
+        </GmapMarker>
         <GmapInfoWindow
           :opened="info_window"
           @closeclick="InfoWindowClose"
-          :position="CurrentMarker.current_position">
+          :position="target">
           lat: {{target.lat}} lng: {{target.lng}}
         </GmapInfoWindow>
-  
-        <GmapCircle
+
+        <!-- wifi定位誤差的circle -->
+        <!-- <GmapCircle
           :options="{fillColor:'#0000ff',fillOpacity:0.4,strokeColor:'#0000ff',strokeOpacity:0.4}"
           :center="CurrentMarker.current_position"
           :radius="CurrentMarker.radius">
-        </GmapCircle>
+        </GmapCircle> -->
 
-        <!-- test fake data -->
-        <GmapMarker
-          :position='target'>
-        </GmapMarker>
 
+        <!-- boundary circle -->
         <GmapCircle 
           :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
           :center="current_boundary"
           :radius="boundary_radius">
         </GmapCircle>
+
         <GmapPolyline 
             :path="roads"
             v-bind:options="{ 
@@ -92,24 +97,19 @@
 
 
 <script>
-  import GmapCustomMarker from 'vue2-gmap-custom-marker';
+  //import GmapCustomMarker from 'vue2-gmap-custom-marker';
   import {gmapApi} from 'vue2-google-maps'
   import {GetAllMarkers} from '@/apis/map.js'
   import {GetBoundaryPosition} from '@/apis/boundary.js'
   import {CreateStompClient} from '@/utils/stompclient.js'
   export default {
     components:{
-      'gmap-custom-marker': GmapCustomMarker
+      //'gmap-custom-marker': GmapCustomMarker
     },
     computed:{
       google:gmapApi,
       CurrentMarker:function(){
         return this.markers[this.select_value]
-      },
-      MapCenter:function(){
-        if (!this.marker_loading)
-          return this.map_default_center 
-        return this.current_boundary
       },
       /* get trakcer list */
       tracker_list:function(){
@@ -137,6 +137,7 @@
           lng:0
         },
         stomp_client:null,
+        subscribe_id:null,
         boundary_radius:0,
         markers:null,
         marker_loading:false,
@@ -156,6 +157,17 @@
       SelectChange:function(){
         this.marker_loading = true
         console.log('selection change')
+
+        /*  每次切換追蹤目標時 取消訂閱上個追蹤者 */
+        if(this.stomp_client&&this.subscribe_id){
+          this.stomp_client.unsubscribe(this.subscribe_id)
+          this.target.lat = 0
+          this.target.lat = 0
+          this.map_default_center.lat = 23.696413
+          this.map_default_center.lng = 120.532343
+        }
+
+
         /*
           Todo: 
           selection被選到特定的trakcer時
@@ -173,16 +185,29 @@
       },
       /*  tracking target */
       StartTracking:function(){
+        /*  
+          start tracking target
+          subscribe tracker-event(exchange)
+        */
         console.log(this.stomp_client)
-        this.stomp_client.subscribe('/queue/test123',(msg)=>{
-          console.log(typeof(JSON.parse(msg.body)))
-          this.target.lat = JSON.parse(msg.body).lat 
-          this.target.lng = JSON.parse(msg.body).lng
-          this.roads.push({lat:this.target.lat,lng:this.target.lng})
-     
-        })
+        let destination = `/exchange/tracker-event/tracker.${this.select_value}.notification.respond`
+        let retv = this.stomp_client.subscribe(destination,this.on_message)
+        this.subscribe_id = retv.id 
+        console.log('subscribe id is ',this.subscribe_id)
+ 
+      },
 
-      }
+      /*  stomp on_message callback */
+      on_message:function(msg){
+
+        console.log('message is '+msg.body)
+        let temp_position = JSON.parse(msg.body)
+        console.log(temp_position)
+        this.target.lat = temp_position.Result.Latitude
+        this.target.lng = temp_position.Result.Longitude
+        this.map_default_center.lat = temp_position.Result.Latitude
+        this.map_default_center.lng = temp_position.Result.Longitude
+      },
 
     },
     created(){
@@ -192,6 +217,8 @@
       }).catch(err=>{
         console.log(err)
       })
+
+      /*  create stomp connection */ 
       this.stomp_client = CreateStompClient()
     }
   }
