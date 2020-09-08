@@ -45,7 +45,8 @@ export default {
     },
     methods:{
         StompConnect:function(){
-            this.ws = new WebSocket('ws://140.125.201.22:15674/ws')
+            //this.ws = new WebSocket('ws://127.0.0.1:15674/ws')
+            this.ws = new WebSocket('ws://'+location.hostname+':15674/ws')
             this.client = webstomp.over(this.ws)
             this.client.connect(process.env.VUE_APP_AMQP_USER,process.env.VUE_APP_AMQP_PASSWORD,this.on_connect,this.on_error)
         },
@@ -82,7 +83,8 @@ export default {
     },
     created(){
         this.StompConnect()
-
+        console.log('host = ')
+        console.log(location.hostname)
     }
 }
 </script>
