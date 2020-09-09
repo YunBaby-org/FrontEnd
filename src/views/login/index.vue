@@ -23,8 +23,7 @@
                 </span>
                 <el-input type="password" v-model="LoginInfo.password" placeholder="請輸入您的密碼"></el-input>
             </el-form-item>
-            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="post" style="width:100%; margin-top:20px;">登入</el-button>
-            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="post2" style="width:100%; margin-top:20px;">登入</el-button>
+            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="HandleLogin" style="width:100%; margin-top:20px;">登入</el-button>
             <div class="tips" style="width:100%;text-align:center; margin-top:30px;">
                 <router-link to="register">註冊帳號</router-link>
             </div>
@@ -36,7 +35,6 @@
 <script>
 
 import {UserLogin} from '@/apis/user'
-
 export default {
   data:function(){
     const ValidEmail = (rule,value,callback)=>{
@@ -63,23 +61,28 @@ export default {
     }
   },
   methods:{
-    HandleLogin:async function(){
+    HandleLogin:function(){
       this.fullscreenLoading = true
-      let data = {
-        "email":this.LoginInfo.email,
-        "password":this.LoginInfo.password
-      }
-      await UserLogin(data).then(res=>{
-        console.log('this is response')
+
+      let form_data = new FormData()
+      form_data.append("email",this.LoginInfo.email)
+      form_data.append("password",this.LoginInfo.password)
+
+
+      UserLogin(form_data).then(res=>{
+        console.log('login response')
         console.log(res)
-        console.log(res.status)
-          
+        this.fullscreenLoading = false
+        // 跳轉
+        this.$router.push('/home/index')
       }).catch(err=>{
-        console.log('this catch ')
+        console.log('login error catch ')
         console.log(err.response)
+        this.$message("登入失敗")
+        this.fullscreenLoading = false
       })
     
-      this.fullscreenLoading = false
+      
 
     }
   }

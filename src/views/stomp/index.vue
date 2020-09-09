@@ -4,6 +4,8 @@
         <el-button style="width:100%;margin-bottom:30px;" @click="StartSubscribe">subscribe</el-button>
         <h1>{{status}}</h1>
         <h1>{{target}}</h1>
+        <!-- <el-button @click="test_axios">test axios </el-button>
+        <el-button @click="test_axios2">test axios </el-button> -->
         <GmapMap
             :center="map_default_center"
             :zoom="18"
@@ -23,6 +25,7 @@
 
 <script>
 import webstomp from 'webstomp-client';
+
 export default {
     data(){
         return {
@@ -44,6 +47,23 @@ export default {
         }
     },
     methods:{
+        // test_axios:function(){
+        //     let path = '/api/v1/resource/'
+        //     axios.get(path).then((res)=>{
+        //         console.log(path)
+        //         console.log('test axios is ok ')
+        //         console.log(res)
+        //         window.alert(res.data)
+        //     })
+        // },
+        // test_axios2:function(){
+        //     let path = 'api/v1/auth/'
+        //     axios.get(path).then(res=>{
+        //         console.log(path)
+        //         console.log(res.data)
+        //         window.alert(res.data)
+        //     })
+        // },
         StompConnect:function(){
             //this.ws = new WebSocket('ws://127.0.0.1:15674/ws')
             this.ws = new WebSocket('ws://'+location.hostname+':15674/ws')

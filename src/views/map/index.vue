@@ -1,7 +1,6 @@
 <template>
   <div class="app-container" style="height:100%" >
     <div class="color-mark">
-      
       <el-row>
         <el-col>
           <div style="width:15px; height:15px; background-color: #FF6666;display: inline-block;" ></div>

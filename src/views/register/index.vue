@@ -4,12 +4,17 @@
             <div class="title-container">
                 <h3 class="title">註冊帳號</h3>
             </div>
+
             <el-form-item label="信箱">
                 <el-input v-model="RegisterForm.email"></el-input>
             </el-form-item>
 
             <el-form-item label="密碼">
                 <el-input type="password" v-model="RegisterForm.password"></el-input>
+            </el-form-item>
+            
+            <el-form-item label="使用者名稱">
+                <el-input v-model="RegisterForm.username"></el-input>
             </el-form-item>
 
             <el-form-item label="手機">
@@ -34,32 +39,41 @@ export default {
             RegisterForm:{
                 email:'',
                 password:'',
-                phone:''
+                phone:'',
+                username:''
             },
             fullscreenLoading:false
         }
     },
     methods:{
-      HandleRegister:async function(){
+      HandleRegister:function(){
         this.fullscreenLoading = true 
-        let data = {
-          "userid":"asd96148",
-          "username":"邱品峰",
-          "phone":this.RegisterForm.phone,
-          "email":this.RegisterForm.email,
-          "password":this.RegisterForm.password,
-          "address":"三蝦"
-        }
-        
-        await UserRegister(data).then(res=>{
+        let form_data = new FormData()
+        form_data.append("email",this.RegisterForm.email)
+        form_data.append("password",this.RegisterForm.password)
+        form_data.append("phone",this.RegisterForm.phone)
+        form_data.append("username",this.RegisterForm.username)
+
+
+        UserRegister(form_data).then(res=>{
           console.log('register response')
           console.log(res)
+          this.fullscreenLoading = false
+          this.SignupSuccess()
         }).catch(err=>{
           console.log('register error catch ')
           console.log(err.response)
+          this.fullscreenLoading = false
         })
-        this.fullscreenLoading = false
-        console.log('register complete')
+        
+
+      },
+      SignupSuccess:function(){
+        this.$message('註冊成功!')
+        this.RegisterForm.email = ''
+        this.RegisterForm.password = ''
+        this.RegisterForm.username = '' 
+        this.RegisterForm.phone = '' 
       }
     }
 }

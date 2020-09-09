@@ -2,8 +2,10 @@ import request from '../utils/request'
 
 //const base_url = process.env.VUE_APP_BASE_URL
 export function UserLogin(data){
+    //let form_data = new FormData()
+
     let config = {
-        url:'/auth/login',
+        url:'/api/v1/auth/login',
         method:'POST',
         data
     }
@@ -13,8 +15,9 @@ export function UserLogin(data){
 
 }
 export function UserRegister(data){
-    let config = {
-        url:'/auth/register',
+
+    let config= {
+        url:' /api/v1/auth/signup',
         method:'POST',
         data
     }
@@ -27,6 +30,5 @@ export function GetUserInfo(){
         url:'/api/v1/resources/users/information',
         method:'GET'
     }
-
     return request(config)
 }
