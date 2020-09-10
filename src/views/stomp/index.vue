@@ -47,23 +47,6 @@ export default {
         }
     },
     methods:{
-        // test_axios:function(){
-        //     let path = '/api/v1/resource/'
-        //     axios.get(path).then((res)=>{
-        //         console.log(path)
-        //         console.log('test axios is ok ')
-        //         console.log(res)
-        //         window.alert(res.data)
-        //     })
-        // },
-        // test_axios2:function(){
-        //     let path = 'api/v1/auth/'
-        //     axios.get(path).then(res=>{
-        //         console.log(path)
-        //         console.log(res.data)
-        //         window.alert(res.data)
-        //     })
-        // },
         StompConnect:function(){
             //this.ws = new WebSocket('ws://127.0.0.1:15674/ws')
             this.ws = new WebSocket('ws://'+location.hostname+':15674/ws')
@@ -82,10 +65,29 @@ export default {
         on_message:function(msg){
             this.message = msg.body 
             console.log('message is '+msg.body)
-            let temp_position = JSON.parse(msg.body)
-            console.log(temp_position)
-            this.target.lat = temp_position.Result.Latitude
-            this.target.lng = temp_position.Result.Longitude
+
+            let retv = JSON.parse(msg.body)
+            switch (retv.Response){
+            case 'GetPowerStatus':
+                console.log('enter GetPowerStatus')
+                break 
+            case 'GetDeviceStatus':
+                console.log('enter GetDeviceStatus')
+                break;
+            case 'GetVersion':
+                console.log('enter GetVersion')
+                break;
+            case 'ScanGPS':
+                console.log('Enter ScanGPS')
+                this.target.lat = retv.Result.Latitude
+                this.target.lng = retv.Result.Longitude
+                this.map_default_center.lat = retv.Result.Latitude
+                this.map_default_center.lng = retv.Result.Longitude
+                break;
+            case 'ScanWifiSignal':
+                console.log('enter ScanWifiSignal')
+                break;
+            }
         },
         StartSubscribe:function(){
             let destination = `/exchange/tracker-event/tracker.${this.target_id}.notification.respond`

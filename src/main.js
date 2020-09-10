@@ -12,7 +12,7 @@ import GmapCluster from "vue2-google-maps/dist/components/cluster"
 import 'animate.css'
 
 
-import './permission.js'
+//import './permission.js'
 
 
 

@@ -14,6 +14,8 @@
         </el-col>
       </el-row>
     </div>
+
+
     <el-select placeholder="目標" v-model="select_value" @change="SelectChange" style="width:100%; margin-bottom:10px;">
       <el-option
         v-for="(m,index) in tracker_list"
@@ -22,7 +24,49 @@
         :key="index">
       </el-option>
     </el-select>
-    <el-button style="width:100%; margin-bottom:10px;" @click="StartTracking">開啟追蹤</el-button>
+
+    <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;margin-bottom:10px;">
+      <el-col>
+       <el-switch
+          @change="AutoReport"
+          style="display: block"
+          v-model="auto_report"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+      
+          inactive-text="自動回報">
+        </el-switch>
+      </el-col>
+      <el-col>
+        <el-switch
+          @change="PowerSave"
+          style="display: block"
+          v-model="power_mode"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          inactive-text="省電模式">
+        </el-switch>
+      </el-col>
+    </el-row>
+
+    <!-- GetPower SetAutoReport -->
+    <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;">
+      <el-col >
+        <el-button @click='SendRequest("GetPowerStatus")' type="primary" round>目標手機電力 {{target_power}}%</el-button>
+      </el-col>
+      
+      <el-col >
+        <el-button @click='SendRequest("ScanWifiSignal")' type="primary" round>啟用wifi定位</el-button>
+      </el-col>
+
+      <el-col >
+        <el-button @click='SendRequest("ScanGPS")' type="primary" round>啟用GPS定位</el-button>
+      </el-col>
+      
+
+    </el-row>
+
+    <el-button type="primary" style="width:100%; margin-bottom:10px;margin-top:10px;" @click="StartTracking">開啟追蹤</el-button>
 
     <GmapMap
       ref="map"
@@ -32,15 +76,6 @@
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
       <div v-if="marker_loading">
-
-<!-- 
-        <gmap-custom-marker 
-          :marker="target" 
-          alignment="center" 
-          @click.native="MarkerEvent"
-          :class="bounce_animation" >
-          <el-avatar :size="50">123</el-avatar>
-        </gmap-custom-marker>   -->
         <GmapMarker
           @click="MarkerEvent"
           :position="target">
@@ -53,12 +88,6 @@
           lat: {{target.lat}} lng: {{target.lng}}
         </GmapInfoWindow>
 
-        <!-- wifi定位誤差的circle -->
-        <!-- <GmapCircle
-          :options="{fillColor:'#0000ff',fillOpacity:0.4,strokeColor:'#0000ff',strokeOpacity:0.4}"
-          :center="CurrentMarker.current_position"
-          :radius="CurrentMarker.radius">
-        </GmapCircle> -->
 
 
         <!-- boundary circle -->
@@ -100,7 +129,9 @@
   import {gmapApi} from 'vue2-google-maps'
   import {GetAllMarkers} from '@/apis/map.js'
   import {GetBoundaryPosition} from '@/apis/boundary.js'
+  import {SendToPhone} from '@/apis/phone.js'
   import {CreateStompClient} from '@/utils/stompclient.js'
+
   export default {
     components:{
       //'gmap-custom-marker': GmapCustomMarker
@@ -112,7 +143,8 @@
       },
       /* get trakcer list */
       tracker_list:function(){
-        return this.$store.getters.trackerList
+        //return this.$store.getters.trackerList
+        return ['unknown']
       },
       /*  get current tracker */ 
       tracker:function(){
@@ -131,22 +163,52 @@
           lat:0,
           lng:0
         },
+        target_power:0,//target's phone power %
         current_boundary:{
           lat:0,
           lng:0
         },
-        stomp_client:null,
-        subscribe_id:null,
         boundary_radius:0,
+
+        stomp_client:null,//stomp connection 
+        subscribe_id:null,//stomp current subscription's id
+
         markers:null,
         marker_loading:false,
         roads:[],
-        bounce_animation:'animate__animated animate__bounce animate__infinite	infinite',
-        pulse_animation:'animate__animated animate__pulse animate__infinite	infinite',
+
+        auto_report:true,//自動回報開關
+        power_mode:false,//省電模式開關
+
       }
     },
     methods:{
-
+      AutoReport:function(){
+        let data = {
+          "Request":"SetAutoReport",
+          "Payload": { "Enable": this.auto_report },
+          "tracker_name":this.select_value
+        }
+        SendToPhone(data)
+        
+      },
+      PowerSave:function(){
+        //call rest , and then rest publish "PowerSave" to rabbitmq
+        let data = {
+          "Request":"SetPowerSaving",
+          "Payload":{ "Enable":this.power_mode},
+          "tracker_name":this.select_value  
+        }
+        SendToPhone(data)
+      },
+      // 傳送命令------->Rest---------->手機
+      SendRequest:function(action){
+        let data = {
+          "Request":action,
+          "tracker_name":this.select_value
+        }
+        SendToPhone(data)
+      },
       /*  marker click event  */
       MarkerEvent:function(){
         this.info_window = true
@@ -198,14 +260,34 @@
 
       /*  stomp on_message callback */
       on_message:function(msg){
-
+        /*
+          Response: "GetDeviceStatus", id: "123e4567-e89b-12d3-a456-426655440000", timestamp: 1599765528, Status: "Success
+          判斷Response
+        */
         console.log('message is '+msg.body)
-        let temp_position = JSON.parse(msg.body)
-        console.log(temp_position)
-        this.target.lat = temp_position.Result.Latitude
-        this.target.lng = temp_position.Result.Longitude
-        this.map_default_center.lat = temp_position.Result.Latitude
-        this.map_default_center.lng = temp_position.Result.Longitude
+        let retv = JSON.parse(msg.body)
+        switch (retv.Response){
+          case 'GetPowerStatus':
+            console.log('GetPowerStatus Response')
+            this.target_power = retv.Result.CapacityLevel
+            break 
+          case 'GetDeviceStatus':
+            console.log('GetDeviceStatus Response')
+            break;
+          case 'GetVersion':
+            console.log('GetVersion Response')
+            break;
+          case 'ScanGPS':
+            console.log('ScanGPS Response')
+            this.target.lat = retv.Result.Latitude
+            this.target.lng = retv.Result.Longitude
+            this.map_default_center.lat = retv.Result.Latitude
+            this.map_default_center.lng = retv.Result.Longitude
+            break;
+          case 'ScanWifiSignal':
+            console.log('ScanWifiSignal Response')
+            break;
+        }
       },
 
     },
