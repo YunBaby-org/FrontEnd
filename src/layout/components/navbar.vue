@@ -4,7 +4,7 @@
         
         <!-- 右邊的使用者照片 -->
         <div class="right-menu">
-          <el-dropdown class="avatar-container" trigger="click">
+          <el-dropdown class="avatar-container" trigger="click" @command="Logout">
             <!-- avatar專門放使用者資訊的地方 -->
             <div class="avatar-wrapper">
               <!-- <img :src="userinfo.userimg" style="width:35px; height:35px"> -->
@@ -14,9 +14,8 @@
           
             <!-- el-dropdown menu 則是click後出現的下滑選項 -->
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>test1</el-dropdown-item>
-              <el-dropdown-item>test2</el-dropdown-item>
-              <el-dropdown-item>test3</el-dropdown-item>
+              <el-dropdown-item command='1' @click="Logout">登出</el-dropdown-item>
+
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -26,7 +25,8 @@
 
 <script>
 import hamburger from '@/components/hamburger/index.vue'
-
+import {UserLogout} from '@/apis/user.js'
+import {RemoveCookie} from '@/utils/auth'
 export default {
     components:{
         hamburger,
@@ -35,6 +35,17 @@ export default {
         toggleSideBar:function(){
             this.$store.dispatch('app/toggleSideBar')
             
+        },
+        Logout:function(){
+          UserLogout().then(res=>{
+            console.log(res)
+            this.$message('登出')
+            RemoveCookie('login-status')
+            this.$router.push('/login')
+          }).catch(err=>{
+            console.log(err)
+            this.$message('錯誤')
+          })
         }
     },
     computed:{

@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import createAuthRefreshInterceptor from 'axios-auth-refresh'
 axios.defaults.withCredentials = true;
 
 /*
@@ -12,11 +12,24 @@ const axios_instance = axios.create({
     timeout:5000
 })
 
+//token過期 retry request
+const refreshAuthLogic = () => axios.post('/api/v1/auth/refreshToken').then((res)=>{
+    console.log('refresh logic ')
+    console.log(res)
+
+    return Promise.resolve()
+})
+
 /*
     set request interceptors 
     送到http request前會先來這邊
     可以再這邊做一些加上token的動作
 */
+createAuthRefreshInterceptor(
+    axios_instance,
+    refreshAuthLogic
+)
+
 
 axios_instance.interceptors.request.use((config)=>{
     // do something before request is sent

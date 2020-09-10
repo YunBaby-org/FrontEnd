@@ -12,6 +12,7 @@
     "@chenfengyuan/vue-qrcode": "^1.0.2",
     "animate.css": "^4.1.0",
     "axios": "^0.19.2",
+    "axios-auth-refresh": "^3.0.0",
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
     "express": "^4.17.1",

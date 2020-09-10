@@ -1,36 +1,24 @@
 <template>
     <div class="app-container">
-        
-        <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <span>卡片名稱</span>
-            </div>
-            <div v-for="o in 4" :key="o" class="text item">
-                {{o}}
-            </div>
-        </el-card>
-
-        <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <span>卡片名稱</span>
-            </div>
-            <div v-for="o in 4" :key="o" class="text item">
-                {{o}}
-            </div>
-        </el-card>
-        <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <span>卡片名稱</span>
-            </div>
-            <div v-for="o in 4" :key="o" class="text item">
-                {{o}}
-            </div>
-        </el-card>
+        <h1>this is home page </h1>
+        <el-button @click="protect">protect value</el-button>
     </div>
 </template>
 <script>
+
+import {GetUserProtect} from '@/apis/user'
 export default {
-    
+  methods:{
+    protect:function(){
+      GetUserProtect().then(res=>{
+        window.alert(res.data)
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
+    }
+  
+  }    
 }
 </script>
 

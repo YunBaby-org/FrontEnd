@@ -1,14 +1,14 @@
 import Cookies from 'js-cookie'
 
-const tokenkey = 'token'
+//key login-status
 
-export function getToken(){
-    return Cookies.get(tokenkey)
+export function GetLoginStatus(){
+    return Cookies.get('login-status')
 }
-export function setToken(token){
+export function SetCookie(key){
     console.log("set token")
-    return Cookies.set(tokenkey,token)
+    return Cookies.set(key,true)
 }
-export function removeToken() {
-    return Cookies.remove(tokenkey)
+export function RemoveCookie(key) {
+    return Cookies.remove(key)
 }

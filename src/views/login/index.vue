@@ -35,6 +35,7 @@
 <script>
 
 import {UserLogin} from '@/apis/user'
+import {SetCookie} from '@/utils/auth'
 export default {
   data:function(){
     const ValidEmail = (rule,value,callback)=>{
@@ -72,19 +73,29 @@ export default {
       UserLogin(form_data).then(res=>{
         console.log('login response')
         console.log(res)
+
+        SetCookie('login-status')
+
+        this.$message('登入成功!')
         this.fullscreenLoading = false
-        // 跳轉
         this.$router.push('/home/index')
       }).catch(err=>{
         console.log('login error catch ')
         console.log(err.response)
-        this.$message("登入失敗")
+        this.$message("登入失敗!")
         this.fullscreenLoading = false
       })
     
       
 
     }
+  },
+  created(){
+    //let timestamp = 1599711039
+    //let data = new Date(timestamp*1000)
+    //let data2 = new Date()
+
+    
   }
 }
 </script>
