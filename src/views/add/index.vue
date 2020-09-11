@@ -5,15 +5,15 @@
                 <h1>新增追蹤目標</h1>
             </div>
             <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;">
-                <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標信箱</el-col>
+                <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標名稱(trackername)</el-col>
                 <el-col :xs="14" :sm="6" :md="9" :lg="9" :xl="9">
-                    <el-input v-model="target_form.email" placeholder="enter tracker's email"></el-input>
+                    <el-input v-model="target_form.name" placeholder="enter tracker's name"></el-input>
                 </el-col>
             </el-row>
             <el-row :gutter="10" justify="center" type="flex" style="align-items: center;display: flex;">
-                <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標密碼</el-col>
+                <el-col :xs="10" :sm="6" :md="6" :lg="4" :xl="2">目標手機</el-col>
                 <el-col :xs="14" :sm="6" :md="9" :lg="9" :xl="9">
-                    <el-input v-model="target_form.password" placeholder="enter tracker's email"></el-input>
+                    <el-input v-model="target_form.phone" placeholder="enter tracker's phone"></el-input>
                 </el-col>
             </el-row>
             <el-button @click="AddTracker" style="margin:0 auto;display:block; width:100px;" type="primary" plain>新增</el-button>        
@@ -46,10 +46,6 @@
                 </el-table-column>
 
                 <el-table-column
-                    prop="email"
-                    label="信箱">
-                </el-table-column>
-                <el-table-column
                     fixed="right"
                     label="操作"
                     width="150">
@@ -72,9 +68,9 @@
 
         <!-- setting boundary dialog  -->
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
-            <h2>目標: {{temp_marker_userinfo.username}} 目標id: {{temp_marker_userinfo.userid}}</h2>
+            <h2>目標: {{temp_marker_userinfo.username}}</h2>
             <el-input-number v-model="temp_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
-            <el-button type="primary" @click="AddTracker" style="margin-bottom:5px; width:100%;">更新</el-button>
+            <el-button type="primary" @click="UpdateBoundary" style="margin-bottom:5px; width:100%;">更新</el-button>
         
             <GmapMap
                 ref="map"
@@ -102,6 +98,7 @@
 <script>
 import {gmapApi} from 'vue2-google-maps'
 import {UpdateAllTrackers,AddTracker} from '@/apis/tracker.js'
+import {UpdateBoundaryPosition} from '@/apis/boundary.js'
 import axios from 'axios'
 
 export default {
@@ -109,8 +106,8 @@ export default {
         return {
             loading:false,
             target_form:{
-                "email":null,
-                "password":null
+                "name":null,
+                "phone":null
             },        
             map_default_center:{
                 lat:23.696413,
@@ -136,8 +133,6 @@ export default {
         google:gmapApi,
         trackersInfo:function(){
             /*  return all trackers information from vuex   */
-            console.log(this.$store.getters.trackersInfo)
-            console.log(Object.values(this.$store.getters.trackersInfo))
             return Object.values(this.$store.getters.trackersInfo)
         },
         QrcodeWidth:function(){
@@ -145,7 +140,10 @@ export default {
                 return 600 
             
             return document.body.clientWidth - 100 
-        }
+        },
+        tracker_map:function(){
+            return this.$store.getters.trackerMap
+        },
     },
     methods:{
         DialogClose:function(){
@@ -179,7 +177,10 @@ export default {
         AddTracker:async function(){
 
             // send tracker info to REST API 
-            AddTracker(this.target_form)
+            let form_data = new FormData()
+            form_data.append('name',this.target_form.name)
+            form_data.append('phone',this.target_form.phone)
+            AddTracker(this.form_data)
 
 
             this.loading = true //loading  
@@ -207,15 +208,29 @@ export default {
 
         /*  boundary function   */
         EditBoundary(index, row) {
-            console.log(index, row)
-            console.log(row)
+
             this.dialog_boundary = true 
             this.temp_marker_userinfo = {
-                userid:row.userid,
                 username:row.name,
                 phone:row.phone,
-                email:row.email
+ 
             }
+        },
+        UpdateBoundary:function(){
+            let new_boundary = {
+                "boundary":{
+                    "lat":this.temp_marker_position.lat,
+                    "lng":this.temp_marker_position.lng,
+                    "radius":this.temp_marker_radius
+                }
+            }
+            UpdateBoundaryPosition(this.tracker_map[this.temp_marker_userinfo.username],new_boundary).then(res=>{
+                console.log('update boundary response')
+                console.log(res)
+            }).catch(err=>{
+                console.log('update boundary error')
+                console.log(err)
+            })
         }
     }
     

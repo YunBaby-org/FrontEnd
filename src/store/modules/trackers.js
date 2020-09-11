@@ -1,8 +1,8 @@
 const state = {
 
     trackers:{},//tracker's information 
-    tracker_list:[] //tracker list ["test1id","test2id",.....]
-
+    tracker_list:[], //tracker list ["test1id","test2id",.....]
+    id_map:{}// name to trackerid map 
 }
 
 const mutations = {
@@ -13,6 +13,10 @@ const mutations = {
     UPDATE_TRACKER_LIST:function(state,new_tracker_list){
         console.log('update tracker list (mutation)')
         state.tracker_list = new_tracker_list
+    },
+    UPDATE_ID_MAP:function(state,new_map){
+        console.log('update id map (mutation)')
+        state.id_map = new_map
     }
 }
 
@@ -28,6 +32,17 @@ const actions = {
     UpdateTrackerList:function({commit},data){
         console.log('update tracker list (action)')
         commit("UPDATE_TRACKER_LIST",data)
+    },
+
+
+    UpdateIdMap:function({commit},data){
+        console.log('update id_map (action)')
+        let temp = {}
+        for(let key in data){
+            temp[data[key].name] = key 
+        }
+        commit("UPDATE_ID_MAP",temp)
+        commit("UPDATE_TRACKER_LIST",Object.keys(temp))
     }
 }
 
