@@ -19,12 +19,6 @@
             <el-button @click="AddTracker" style="margin:0 auto;display:block; width:100px;" type="primary" plain>新增</el-button>        
 
         </el-card>
-        <!-- 
-            lg = 一般大型螢幕
-            md = 中型螢幕
-            sm = 小型設備
-            xs = 超小型設備
-         -->
         <el-card shadow="hover" id="tracker_table">
             <div slot="header" style="text-align:center;">
                 <h1>追蹤清單</h1>

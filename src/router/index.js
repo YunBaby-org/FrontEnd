@@ -61,6 +61,18 @@ Vue.use(VueRouter)
     ]
   },
   {
+    path:'/boundary',
+    component:Layout,
+    meta:{title:'圍籬',icon:'el-icon-aim'},
+    children:[
+      {
+        path:'index',
+        name:'Boundary',
+        component:()=>import('@/views/boundary/index.vue')
+      }
+    ]
+  },
+  {
     path:'/stomp',
     component:Layout,
     meta:{title:'測試',icon:'el-icon-plus'},
