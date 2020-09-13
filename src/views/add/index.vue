@@ -91,9 +91,9 @@
 
 <script>
 import {gmapApi} from 'vue2-google-maps'
-import {UpdateAllTrackers,AddTracker} from '@/apis/tracker.js'
+import {UpdateAllTrackers,AddTracker,GetAuthcode} from '@/apis/tracker.js'
 import {UpdateBoundaryPosition} from '@/apis/boundary.js'
-import axios from 'axios'
+
 
 export default {
     data:function(){
@@ -174,19 +174,27 @@ export default {
             let form_data = new FormData()
             form_data.append('name',this.target_form.name)
             form_data.append('phone',this.target_form.phone)
-            AddTracker(this.form_data)
-
-
-            this.loading = true //loading  
-            this.dialog_qrcode = true // open QRCODE dialog 
-
-            // Backend GET tracker Auth code 
-            await axios.get('/authorizecode').then((res)=>{
-                console.log(res)
-                this.dialog_qrcode_data = res.data.code //assing QRCODE value
+            let tracker_id = ''
+            this.loading = true
+            this.dialog_qrcode = true 
+            await AddTracker(this.form_data).then(res=>{
+                tracker_id = res.data.tracker_id
+                this.$message("新增tracker成功")
+            }).catch(err=>{
+                this.$message('新增tracker失敗'+err.response)
             })
-            this.loading = false 
-            this.dialog_qrcode_ok = true //QRCODE data ready 
+
+            
+            GetAuthcode(tracker_id).then(res=>{
+                console.log('auth code = '+res.data.payload.authentication_code)
+                this.dialog_qrcode_data = res.data.payload.authentication_code
+                this.loading = false 
+                this.dialog_qrcode_ok = true
+            }).catch(err=>{
+                this.$message('get auth code error '+err.response)
+            })
+ 
+            UpdateAllTrackers(this.$store)
 
             
         },

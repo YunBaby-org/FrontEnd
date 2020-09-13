@@ -30,11 +30,15 @@ export function AddTracker(data){
     
     return request(config)
 }
-export function UpdateBoundary(){
-    let api_url = '/api/v1/resources/users/boundary'
+
+
+export function GetAuthcode(data){
+    let api_url = '/api/v1/mobile/trackers/authentication-code'
     let config = {
         url:api_url,
-        method:'PUT'
+        method:'POST',
+        data
     }
+
     return request(config)
 }
