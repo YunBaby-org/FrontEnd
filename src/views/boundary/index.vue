@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <h2>{{len2}}</h2>
+      
         <el-select placeholder="目標" v-model="select_value" @change="SelectChange" style="width:100%; margin-bottom:10px;">
             <el-option
                 v-for="(m,index) in tracker_list"
@@ -10,7 +10,7 @@
             </el-option>
             
         </el-select>
-        <boundarytable :title="select_value"></boundarytable>
+        <boundarytable v-if="select_value!==''" :title="select_value" :boundarylist="boundary_list"></boundarytable>
 
     </div>
 </template>
@@ -47,6 +47,9 @@ export default {
         tracker_map:function(){
             return this.$store.getters.trackerMap
         },
+        boundary_list:function(){
+            return this.$store.getters.boundarysList
+        }
     },
     created(){
 
