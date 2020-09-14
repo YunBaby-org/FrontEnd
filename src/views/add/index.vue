@@ -100,8 +100,8 @@ export default {
         return {
             loading:false,
             target_form:{
-                "name":null,
-                "phone":null
+                "name":'',
+                "phone":''
             },        
             map_default_center:{
                 lat:23.696413,
@@ -172,12 +172,12 @@ export default {
 
             // send tracker info to REST API 
             let form_data = new FormData()
-            form_data.append('name',this.target_form.name)
-            form_data.append('phone',this.target_form.phone)
+            await form_data.append('name',this.target_form.name)
+            await form_data.append('phone',this.target_form.phone)
             let tracker_id = ''
             this.loading = true
             this.dialog_qrcode = true 
-            await AddTracker(this.form_data).then(res=>{
+            await AddTracker(form_data).then(res=>{
                 tracker_id = res.data.tracker_id
                 this.$message("新增tracker成功")
             }).catch(err=>{

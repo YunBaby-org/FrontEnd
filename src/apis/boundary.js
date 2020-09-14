@@ -67,3 +67,24 @@ export function UpdateBoundaryPosition(tracker_id,data){
 
     return request(config)
 }
+
+
+export function AddBoundary(data){
+    let api_url = '/api/v1/resources/users/boundary'
+    let config = {
+        url:api_url,
+        method:'POST',
+        data
+    }
+    return request(config)
+}
+
+export function UpdateBoundary(data){
+    let api_url = '/api/v1/resources/users/boundary'
+    let config = {
+        url:api_url,
+        method:'PUT',
+        data
+    }
+    return request(config)
+}

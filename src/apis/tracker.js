@@ -32,8 +32,11 @@ export function AddTracker(data){
 }
 
 
-export function GetAuthcode(data){
+export function GetAuthcode(tracker_id){
     let api_url = '/api/v1/mobile/trackers/authentication-code'
+    let data = {
+        "trackerId":tracker_id
+    }
     let config = {
         url:api_url,
         method:'POST',

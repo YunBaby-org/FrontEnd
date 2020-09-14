@@ -10,7 +10,7 @@
             </el-option>
             
         </el-select>
-        <boundarytable v-if="select_value!==''" :title="select_value" :boundarylist="boundary_list"></boundarytable>
+        <boundarytable v-if="select_value!==''" :title="select_value" :boundarylist="boundary_list" :trackerId="tracker_map[select_value]"></boundarytable>
 
     </div>
 </template>

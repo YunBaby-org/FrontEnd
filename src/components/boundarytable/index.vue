@@ -5,7 +5,7 @@
                 <div slot="header" style="text-align:center;">
                     <h1>{{title}}的所有圍籬</h1>
                 </div>
-                <el-button @click="AddBoundary" type="primary" icon="el-icon-plus" circle style="margin-bottom:15px;"></el-button>
+                <el-button @click="Add" type="primary" icon="el-icon-plus" circle style="margin-bottom:15px;"></el-button>
                 <el-table style="width:100%;" :data="boundarylist" highlight-current-row>
                     <el-table-column type="index" width="50"></el-table-column>
                     <el-table-column label="起始時間">
@@ -28,8 +28,8 @@
 
                     <el-table-column label="操作">
                         <template slot-scope="scope"> 
-                            <el-button @click="ChangeBoundary(scope.$index, scope.row)" size="mini">修改</el-button>
-                            <el-button @click="DeleteBoundary(scope.$index, scope.row)" type="danger" size="mini" >刪除</el-button>
+                            <el-button @click="Change(scope.$index, scope.row)" size="mini">修改</el-button>
+                            <el-button @click="Delete(scope.$index, scope.row)" type="danger" size="mini" >刪除</el-button>
                         </template>
                     </el-table-column>
 
@@ -50,11 +50,14 @@
                             :value="day">
                         </el-option>
                     </el-select>
-                    <el-time-picker>
-
+                    <el-time-picker
+                        v-model="time.start"
+                        :picker-options="{
+                            selectableRange: '0:0:0 - 23:59:59'
+                        }"
+                        placeholder="任意时间点">
                     </el-time-picker>
-                </div>
-                <div>
+
                     <el-select v-model="weekday.end" placeholder="请选择">
                         <el-option
                             v-for="(day,index) in weekdayList"
@@ -63,19 +66,24 @@
                             :value="day">
                         </el-option>
                     </el-select>
-                    <el-time-picker>
-                        
+                    <el-time-picker
+                        v-model="time.end"
+                        :picker-options="{
+                            selectableRange: '0:0:0 - 23:59:59'
+                        }"
+                        placeholder="任意时间点">
                     </el-time-picker>
                 </div>
+   
                 </el-row>
         
-                <el-button v-if="dialog_mode===1" type="primary" @click="UpdateBoundary" style="margin-bottom:5px; width:100%;">更新</el-button>
-                <el-button v-else type="info" @click="UpdateBoundary" style="margin-bottom:5px; width:100%;">新增</el-button>
+                <el-button v-if="dialog_mode===1" type="primary" @click="BoundaryAction(1)" style="margin-bottom:5px; width:100%;">更新</el-button>
+                <el-button v-else type="info" @click="BoundaryAction(2)" style="margin-bottom:5px; width:100%;">新增</el-button>
             </div>
             <GmapMap
                 ref="map"
                 @click="ClickEvent"
-                :zoom="15"
+                :zoom="15" 
                 :center="map_default_center"
                 style="width: 100%; height:700px">
 
@@ -99,6 +107,7 @@
 
 <script>
 import {gmapApi} from 'vue2-google-maps'
+import {AddBoundary,UpdateBoundary} from '@/apis/boundary.js'
 export default {
     data:function(){
         return {
@@ -109,7 +118,9 @@ export default {
             dialog_marker_radius:0,
             dialog_marker_clicked:false,
             weekday:{start:'星期一',end:'星期一'},
-            weekdayList:['星期一','星期二','星期三','星期四','星期五','星期六','星期日',]
+            weekdayList:['星期一','星期二','星期三','星期四','星期五','星期六','星期日',],
+            time:{start:new Date(2016, 9, 10, 0, 0),end:new Date(2016, 9, 10, 18, 40)},
+            current_btnId:''
         }
     },
     computed:{
@@ -117,19 +128,21 @@ export default {
     },
     props:{
         title:String,
+        trackerId:String,
         boundarylist:Array
     },
     methods:{
-        ChangeBoundary:function(index, row){
+        Change:function(index, row){/*  change boundary button  */
             this.dialog_mode = 1 
             this.dialog_boundary = true 
-            console.log(index,row)
+            this.current_btnId = row.id
+            
         },
-        AddBoundary:function(){
+        Add:function(){/*  add boundary button  */
             this.dialog_mode = 2
             this.dialog_boundary = true
         },
-        DeleteBoundary:function(index, row){
+        Delete:function(index, row){/*  delete boundary button  */
             console.log(index,row)
         },
         ShowBoundary:function(index,row){
@@ -139,14 +152,13 @@ export default {
             this.dialog_marker = {lat:row.lat,lng:row.lng}
             this.dialog_marker_radius = row.radius
             this.map_default_center = this.dialog_marker
-            // this.$refs.map.$mapPromise.then((map)=>{
-            //     map.panTo(this.dialog_marker)
-            // })
+
         },
         DialogClose:function(){
             this.dialog_mode = -1
             this.dialog_boundary = false 
             this.dialog_marker_clicked = false
+            this.dialog_marker_radius = 
             this.map_default_center = {lat:23.696413,lng:120.532343}
         },
         /*  boundary click event    */
@@ -166,6 +178,46 @@ export default {
                 this.dialog_marker = click_position
             })
         },
+        BoundaryAction:function(mode){
+            let time_start = this.time.start.getHours()+':'+this.time.start.getMinutes()+':'+this.time.start.getSeconds()
+            let time_end = this.time.end.getHours()+':'+this.time.end.getMinutes()+':'+this.time.end.getSeconds()
+            let weekday_start = this.weekdayList.indexOf(this.weekday.start)+1 
+            let weekday_end = this.weekdayList.indexOf(this.weekday.end)+1 
+            let boundary_data = {
+                "boundary":{
+                    "lat":this.dialog_marker.lat,
+                    "lng":this.dialog_marker.lng,
+                    "radius":this.dialog_marker_radius,
+                    "time_start":time_start,
+                    "time_end":time_end,
+                    "weekday_start":weekday_start,
+                    "weekday_end":weekday_end
+                },
+            }
+            if(mode==2){    /*  add boundary    */
+                boundary_data["tkr_id"] = this.trackerId
+                AddBoundary(boundary_data).then(res=>{
+                    console.log(res)
+                    this.$message("新增圍籬成功")
+                }).catch(err=>{
+                    console.log(err)
+                    this.$message("新增圍籬失敗")
+                })
+            }
+            else if(mode==1){   /*  update boundary */
+                boundary_data["bnd_id"] = this.current_btnId
+                UpdateBoundary(boundary_data).then(res=>{
+                    console.log(res)
+                    this.$message("更新圍籬成功")
+                }).catch(err=>{
+                    console.log(err)
+                    this.$message("更新圍籬失敗")
+                })
+            }
+
+
+        },
+
     }
 }
 </script>
