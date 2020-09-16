@@ -39,16 +39,18 @@
                     label="手機號碼">
                 </el-table-column>
 
-                <el-table-column
-                    fixed="right"
-                    label="操作"
-                    width="150">
-                <template slot-scope="scope"> 
-                    <el-button @click="EditBoundary(scope.$index, scope.row)" size="mini">圍籬</el-button>
-                    <el-button @click="DeleteTracker(scope.$index, scope.row)" type="danger" size="mini" >刪除</el-button>
-                </template>
-                
+                <el-table-column fixed="right" label='QRCODE'>
+                    <template slot-scope="scope"> 
+                        <el-button @click="CreateQrcode(scope.$index, scope.row)" type="primary" size="mini">QRCODE</el-button>
+                    </template>                   
                 </el-table-column>
+
+                <el-table-column fixed="right" label="操作" width="150">
+                    <template slot-scope="scope"> 
+                        <el-button @click="DeleteTracker(scope.$index, scope.row)" type="danger" size="mini" >刪除</el-button>
+                    </template>
+                </el-table-column>
+
             </el-table>      
 
         </el-card>
@@ -64,7 +66,7 @@
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <h2>目標: {{temp_marker_userinfo.username}}</h2>
             <el-input-number v-model="temp_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
-            <el-button type="primary" @click="UpdateBoundary" style="margin-bottom:5px; width:100%;">更新</el-button>
+            
         
             <GmapMap
                 ref="map"
@@ -92,21 +94,15 @@
 <script>
 import {gmapApi} from 'vue2-google-maps'
 import {UpdateAllTrackers,AddTracker,GetAuthcode} from '@/apis/tracker.js'
-import {UpdateBoundaryPosition} from '@/apis/boundary.js'
+
 
 
 export default {
     data:function(){
         return {
             loading:false,
-            target_form:{
-                "name":'',
-                "phone":''
-            },        
-            map_default_center:{
-                lat:23.696413,
-                lng:120.532343
-            },
+            target_form:{"name":'',"phone":''},        
+            map_default_center:{lat:23.696413,lng:120.532343},
             
             dialog_boundary:false,
             dialog_delete:false,
@@ -175,8 +171,7 @@ export default {
             await form_data.append('name',this.target_form.name)
             await form_data.append('phone',this.target_form.phone)
             let tracker_id = ''
-            this.loading = true
-            this.dialog_qrcode = true 
+
             await AddTracker(form_data).then(res=>{
                 tracker_id = res.data.tracker_id
                 this.$message("新增tracker成功")
@@ -184,16 +179,20 @@ export default {
                 this.$message('新增tracker失敗'+err.response)
             })
 
-            
-            GetAuthcode(tracker_id).then(res=>{
-                console.log('auth code = '+res.data.payload.authentication_code)
-                this.dialog_qrcode_data = res.data.payload.authentication_code
-                this.loading = false 
-                this.dialog_qrcode_ok = true
-            }).catch(err=>{
-                this.$message('get auth code error '+err.response)
-            })
- 
+            if(tracker_id!==''){
+                this.loading = true
+                this.dialog_qrcode = true 
+                GetAuthcode(tracker_id).then(res=>{
+                    console.log('auth code = '+res.data.payload.authentication_code)
+                    this.dialog_qrcode_data = res.data.payload.authentication_code
+                    this.loading = false 
+                    this.dialog_qrcode_ok = true
+                }).catch(err=>{
+                    this.$message('get auth code error '+err.response)
+                })               
+            }
+
+            /*  auto update al trakcers ,after adding new tracker   */
             UpdateAllTrackers(this.$store)
 
             
@@ -207,33 +206,20 @@ export default {
             //GetAllTrackers again 
             UpdateAllTrackers(this.$store)
         },
-
-        /*  boundary function   */
-        EditBoundary(index, row) {
-
-            this.dialog_boundary = true 
-            this.temp_marker_userinfo = {
-                username:row.name,
-                phone:row.phone,
- 
-            }
-        },
-        UpdateBoundary:function(){
-            let new_boundary = {
-                "boundary":{
-                    "lat":this.temp_marker_position.lat,
-                    "lng":this.temp_marker_position.lng,
-                    "radius":this.temp_marker_radius
-                }
-            }
-            UpdateBoundaryPosition(this.tracker_map[this.temp_marker_userinfo.username],new_boundary).then(res=>{
-                console.log('update boundary response')
-                console.log(res)
+        CreateQrcode:function(index,row){
+            this.loading = true
+            this.dialog_qrcode = true 
+            GetAuthcode(row.trackerid).then(res=>{
+                console.log('auth code = '+res.data.payload.authentication_code)
+                this.dialog_qrcode_data = res.data.payload.authentication_code
+                this.loading = false 
+                this.dialog_qrcode_ok = true
             }).catch(err=>{
-                console.log('update boundary error')
-                console.log(err)
-            })
+                this.$message('get auth code error '+err.response)
+            })      
         }
+
+
     }
     
 }

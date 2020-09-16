@@ -19,13 +19,13 @@
       </el-option>
     </el-select>
 
-
+    <div v-if="select_value!==''">
       <transition appear enter-active-class="animate__animated animate__fadeInTopLeft"  mode="out-in">
-        <div v-if="function_enable">
+          <div>
           <el-row type="flex" style="margin-bottom:10px;">
             <el-col>
-            <el-switch
-                @change="AutoReport"
+              <el-switch
+                @change="SendRequest('SetAutoReport')"
                 style="display: block"
                 v-model="auto_report"
                 active-color="#13ce66"
@@ -35,7 +35,7 @@
             </el-col>
             <el-col>
               <el-switch
-                @change="PowerSave"
+                @change="SendRequest('SetPowerSaving')"
                 style="display: block"
                 v-model="power_mode"
                 active-color="#13ce66"
@@ -50,10 +50,9 @@
             <el-button @click='SendRequest("ScanWifiSignal")' type="primary" >啟用wifi定位</el-button>
             <el-button @click='SendRequest("ScanGPS")' type="primary" >啟用GPS定位</el-button>
           </el-row>
-
-        </div>
+          </div>
       </transition>
-
+    </div>
 
     <el-row>
       <el-button type="primary" style="width:100%; margin-bottom:10px;margin-top:10px;" @click="StartTracking">開啟追蹤</el-button>
@@ -66,13 +65,15 @@
       map-type-id="terrain"
       style="width: 100%; height:700px"
       :options="{mapTypeControl:false}">
-      <div v-if="marker_loading">
+      
         <GmapMarker
+          v-if="target!==null"
           @click="MarkerEvent"
           :position="target">
 
         </GmapMarker>
         <GmapInfoWindow
+          v-if="target!==null"
           :opened="info_window"
           @closeclick="InfoWindowClose"
           :position="target">
@@ -83,6 +84,7 @@
 
         <!-- boundary circle -->
         <GmapCircle 
+          v-if="current_boundary!==null"
           :options="{fillColor:'#ff0000',fillOpacity:0.4,strokeColor:'#ff0000',strokeOpacity:0.4}"
           :center="current_boundary"
           :radius="boundary_radius">
@@ -106,7 +108,7 @@
                 }]
               }">
         </GmapPolyline> -->
-      </div>
+
 
     </GmapMap>
   </div>
@@ -116,9 +118,7 @@
 
 
 <script>
-  //import GmapCustomMarker from 'vue2-gmap-custom-marker';
   import {gmapApi} from 'vue2-google-maps'
-  //import {GetAllMarkers} from '@/apis/map.js'
   import {GetBoundaryPosition} from '@/apis/boundary.js'
   import {SendToPhone} from '@/apis/phone.js'
   import {CreateStompClient} from '@/utils/stompclient.js'
@@ -145,18 +145,16 @@
       return {
         map_default_center:{lat:23.696413,lng:120.532343},
         info_window:false,
-        select_value:'請選擇目標',
-        target:{lat:0,lng:0},
+        select_value:'',//tracker NAME
+        target:null,
         target_power:0,//target's phone power %
-        current_boundary:{lat:0,lng:0},
+        current_boundary:null,
         boundary_radius:0,
 
         stomp_client:null,//stomp connection 
         subscribe_id:null,//stomp current subscription's id
 
         markers:null,
-        marker_loading:false,
-        function_enable:false,
         roads:[],
 
         auto_report:true,//自動回報開關
@@ -164,30 +162,20 @@
       }
     },
     methods:{
-      AutoReport:function(){
-        let data = {
-          "Request":"SetAutoReport",
-          "Payload": { "Enable": this.auto_report },
-          "tracker_name":this.select_value
-        }
-        SendToPhone(data)
-        
-      },
-      PowerSave:function(){
-        //call rest , and then rest publish "PowerSave" to rabbitmq
-        let data = {
-          "Request":"SetPowerSaving",
-          "Payload":{ "Enable":this.power_mode},
-          "tracker_name":this.select_value  
-        }
-        SendToPhone(data)
-      },
       /* 傳送命令------->Rest---------->手機 */
       SendRequest:function(action){
-        let data = {
-          "Request":action,
-          "tracker_name":this.select_value
+        let data = {"Request":action,"tracker_id":this.tracker_map[this.select_value]}
+        switch(action){
+          case 'SetAutoReport':
+            data["Payload"] = {"Enable": this.auto_report}
+            break
+          case 'SetPowerSaving':
+            data["Payload"] = {"Enable":this.power_mode}
+            break
+          default:
+            break 
         }
+
         SendToPhone(data)
       },
       /*  marker click event  */
@@ -196,25 +184,26 @@
       },
 
       /*  select event  */
-      SelectChange:function(){
-        this.marker_loading = true
-        this.function_enable = true
+      SelectChange:async function(){
+    
+        this.current_boundary = null
         console.log('selection change')
 
         /*  每次切換追蹤目標時 取消訂閱上個追蹤者 */
         if(this.stomp_client&&this.subscribe_id){
           this.stomp_client.unsubscribe(this.subscribe_id)
-          this.target.lat = 0
-          this.target.lat = 0
+          this.target = null 
           this.map_default_center.lat = 23.696413
           this.map_default_center.lng = 120.532343
         }
 
 
-        /*  function parms is trakcer id */
-        GetBoundaryPosition(this.tracker_map[this.select_value]).then(res=>{
-          this.current_boundary = {lat:parseFloat(res.data.boundary.lat),lng:parseFloat(res.data.boundary.lng)}
-          this.boundary_radius = res.data.boundary.radius
+        /*  function parms is trakcer id (mode_num=1,get current boundary)*/
+        GetBoundaryPosition(this.tracker_map[this.select_value],1).then(res=>{
+          this.current_boundary = {lat:parseFloat(res.data.boundarys[0].lat),lng:parseFloat(res.data.boundarys[0].lng)}
+          this.boundary_radius = res.data.boundarys[0].radius
+        }).catch(err=>{
+          console.log(err)
         })
       },
 
@@ -227,7 +216,7 @@
       StartTracking:function(){
         /*subscribe tracker-event(exchange)*/
         console.log(this.stomp_client)
-        let destination = `/exchange/tracker-event/tracker.${this.select_value}.notification.respond`
+        let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
         let retv = this.stomp_client.subscribe(destination,this.on_message)
         this.subscribe_id = retv.id 
         console.log('subscribe id is ',this.subscribe_id)
@@ -252,8 +241,7 @@
             break;
           case 'ScanGPS':
             console.log('ScanGPS Response')
-            this.target.lat = retv.Result.Latitude
-            this.target.lng = retv.Result.Longitude
+            this.target = {"lat":retv.Result.Latitude,"lng":retv.Result.Longitude}
             this.map_default_center.lat = retv.Result.Latitude
             this.map_default_center.lng = retv.Result.Longitude
             break;
@@ -265,9 +253,6 @@
 
     },
     created(){
-
-      /*  get all trackers and store it in Vuex */
-
       /*  create stomp connection */ 
       this.stomp_client = CreateStompClient()
     }

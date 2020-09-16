@@ -18,6 +18,7 @@
 
 
 <script>
+
 import boundarytable from '@/components/boundarytable/index.vue'
 import {UpdateAllBoundarys} from '@/apis/boundary.js'
 export default {

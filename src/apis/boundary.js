@@ -47,6 +47,7 @@ export function UpdateAllBoundarys(tracker_id,mode_num,store){
         store.dispatch("boundary/UpdateBoundarys",res.data)
     }).catch(err=>{
         console.log(err)
+        store.dispatch("boundary/UpdateBoundarys",[])
         window.alert('update boundary error')
     })
 }
