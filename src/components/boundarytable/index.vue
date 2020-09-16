@@ -39,44 +39,17 @@
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <div v-if="dialog_mode!==0">
                 <el-input-number v-model="dialog_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
-          
-                <el-row>
-                <div>
-                    <el-select v-model="weekday.start" placeholder="请选择">
-                        <el-option
-                            v-for="(day,index) in weekdayList"
-                            :key="index"
-                            :label="day"
-                            :value="day">
-                        </el-option>
-                    </el-select>
-                    <el-time-picker
-                        v-model="time.start"
-                        :picker-options="{
-                            selectableRange: '0:0:0 - 23:59:59'
-                        }"
-                        placeholder="任意时间点">
-                    </el-time-picker>
 
-                    <el-select v-model="weekday.end" placeholder="请选择">
-                        <el-option
-                            v-for="(day,index) in weekdayList"
-                            :key="index"
-                            :label="day"
-                            :value="day">
-                        </el-option>
-                    </el-select>
-                    <el-time-picker
-                        v-model="time.end"
-                        :picker-options="{
-                            selectableRange: '0:0:0 - 23:59:59'
-                        }"
-                        placeholder="任意时间点">
-                    </el-time-picker>
-                </div>
-   
-                </el-row>
-        
+                <el-date-picker
+                    size="mini"
+                    style="width:100%;margin-bottom:15px"
+                    v-model="time"
+                    type="datetimerange"
+                    range-separator="至"
+                    start-placeholder="開始日期"
+                    end-placeholder="結束日期">
+                </el-date-picker>
+            
                 <el-button v-if="dialog_mode===1" type="primary" @click="BoundaryAction(1)" style="margin-bottom:5px; width:100%;">更新</el-button>
                 <el-button v-else type="info" @click="BoundaryAction(2)" style="margin-bottom:5px; width:100%;">新增</el-button>
             </div>
@@ -117,10 +90,8 @@ export default {
             dialog_marker:{lat:0,lng:0},
             dialog_marker_radius:0,
             dialog_marker_clicked:false,
-            weekday:{start:'星期一',end:'星期一'},
-            weekdayList:['星期一','星期二','星期三','星期四','星期五','星期六','星期日',],
-            time:{start:new Date(2016, 9, 10, 0, 0),end:new Date(2016, 9, 10, 18, 40)},
-            current_btnId:''
+            current_btnId:'',
+            time:''
         }
     },
     computed:{
@@ -132,6 +103,16 @@ export default {
         boundarylist:Array
     },
     methods:{
+        FormatTime:function(t){
+            let year = t.getFullYear()
+            let month = t.getMonth()+1
+            let date = t.getDate()<10?('0'+t.getDate()):t.getDate()
+            let hour = t.getHours()<10?('0'+t.getHours()):t.getHours()
+            let minute = t.getMinutes()<10?('0'+t.getMinutes()):t.getMinutes()
+            let second = t.getSeconds()<10?('0'+t.getSeconds()):t.getSeconds()
+            //2020-09-16 00:00:00
+            return year+'-'+month+'-'+date+' '+hour+':'+minute+':'+second 
+        },
         Change:function(index, row){/*  change boundary button  */
             this.dialog_mode = 1 
             this.dialog_boundary = true 
@@ -158,8 +139,10 @@ export default {
             this.dialog_mode = -1
             this.dialog_boundary = false 
             this.dialog_marker_clicked = false
-            this.dialog_marker_radius = 
+            this.dialog_marker_radius = 0
+            this.dialog_marker = {lat:0,lng:0}
             this.map_default_center = {lat:23.696413,lng:120.532343}
+            this.time = ''
         },
         /*  boundary click event    */
         ClickEvent:function(event){
@@ -179,10 +162,9 @@ export default {
             })
         },
         BoundaryAction:function(mode){
-            let time_start = this.time.start.getHours()+':'+this.time.start.getMinutes()+':'+this.time.start.getSeconds()
-            let time_end = this.time.end.getHours()+':'+this.time.end.getMinutes()+':'+this.time.end.getSeconds()
-            let weekday_start = this.weekdayList.indexOf(this.weekday.start)+1 
-            let weekday_end = this.weekdayList.indexOf(this.weekday.end)+1 
+            let time_start = this.FormatTime(this.time["0"])
+            let time_end = this.FormatTime(this.time["1"])
+
             let boundary_data = {
                 "boundary":{
                     "lat":this.dialog_marker.lat,
@@ -190,8 +172,6 @@ export default {
                     "radius":this.dialog_marker_radius,
                     "time_start":time_start,
                     "time_end":time_end,
-                    "weekday_start":weekday_start,
-                    "weekday_end":weekday_end
                 },
             }
             if(mode==2){    /*  add boundary    */
