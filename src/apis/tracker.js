@@ -21,7 +21,7 @@ export function UpdateAllTrackers(store){
     })
 }
 export function AddTracker(data){
-    let api_url = '/api/v1/resources/users/addtracker'
+    let api_url = '/api/v1/resources/users/trackers'
     let config = {
         url:api_url,
         method:'POST',
@@ -31,7 +31,16 @@ export function AddTracker(data){
     return request(config)
 }
 
+export function DelTracker(data){
+    let api_url = '/api/v1/resources/users/trackers'
+    let config = {
+        url:api_url,
+        method:'DELETE',
+        data
+    }
 
+    return request (config)
+}
 export function GetAuthcode(tracker_id){
     let api_url = '/api/v1/mobile/trackers/authentication-code'
     let data = {

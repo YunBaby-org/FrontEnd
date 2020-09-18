@@ -93,7 +93,7 @@
 
 <script>
 import {gmapApi} from 'vue2-google-maps'
-import {UpdateAllTrackers,AddTracker,GetAuthcode} from '@/apis/tracker.js'
+import {UpdateAllTrackers,AddTracker,DelTracker,GetAuthcode} from '@/apis/tracker.js'
 
 
 
@@ -197,9 +197,16 @@ export default {
 
             
         },
-        DeleteTracker(index, row) {
-            console.log(index, row)
+        DeleteTracker:async function(index, row) {
+
+            await DelTracker({"id":row.trackerid}).then(()=>{
+                this.$message("刪除目標！")
+            }).catch(err=>{
+                console.log(err)
+                this.$message("刪除目標失敗")
+            })
             this.dialog_delete = true
+            UpdateAllTrackers(this.$store)
         },
         UpdateTrackers:function(){
             console.log('update trackers')

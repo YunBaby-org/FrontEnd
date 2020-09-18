@@ -10,13 +10,13 @@
                     <el-table-column type="index" width="50"></el-table-column>
                     <el-table-column label="起始時間">
                         <template slot-scope="props">
-                            星期{{ props.row.weekday_start }} {{props.row.time_start}}
+                            {{props.row.time_start}}
                         </template>
                     </el-table-column>
 
                     <el-table-column label="結束時間">
                         <template slot-scope="props">
-                            星期{{ props.row.weekday_end }} {{props.row.time_end}}
+                            {{props.row.time_end}}
                         </template>
                     </el-table-column>
                     
@@ -80,7 +80,8 @@
 
 <script>
 import {gmapApi} from 'vue2-google-maps'
-import {AddBoundary,UpdateBoundary} from '@/apis/boundary.js'
+import {UpdateAllBoundarys} from '@/apis/boundary.js'
+import {AddBoundary,UpdateBoundary,DelBoundary} from '@/apis/boundary.js'
 export default {
     data:function(){
         return {
@@ -123,8 +124,16 @@ export default {
             this.dialog_mode = 2
             this.dialog_boundary = true
         },
-        Delete:function(index, row){/*  delete boundary button  */
+        Delete:async function(index, row){/*  delete boundary button  */
+            
+            await DelBoundary({"id":row.id}).then(()=>{
+                this.$message("刪除圍籬成功")
+            }).catch(err=>{
+                console.log(err)
+                this.$message("刪除圍籬失敗")
+            })
             console.log(index,row)
+            UpdateAllBoundarys(this.trackerId,0,this.$store)
         },
         ShowBoundary:function(index,row){
             console.log(index,row)
@@ -161,7 +170,7 @@ export default {
                 this.dialog_marker = click_position
             })
         },
-        BoundaryAction:function(mode){
+        BoundaryAction:async function(mode){
             let time_start = this.FormatTime(this.time["0"])
             let time_end = this.FormatTime(this.time["1"])
 
@@ -176,7 +185,7 @@ export default {
             }
             if(mode==2){    /*  add boundary    */
                 boundary_data["tkr_id"] = this.trackerId
-                AddBoundary(boundary_data).then(res=>{
+                await AddBoundary(boundary_data).then(res=>{
                     console.log(res)
                     this.$message("新增圍籬成功")
                 }).catch(err=>{
@@ -186,7 +195,7 @@ export default {
             }
             else if(mode==1){   /*  update boundary */
                 boundary_data["bnd_id"] = this.current_btnId
-                UpdateBoundary(boundary_data).then(res=>{
+                await UpdateBoundary(boundary_data).then(res=>{
                     console.log(res)
                     this.$message("更新圍籬成功")
                 }).catch(err=>{
@@ -194,7 +203,7 @@ export default {
                     this.$message("更新圍籬失敗")
                 })
             }
-
+            UpdateAllBoundarys(this.trackerId,0,this.$store)
 
         },
 

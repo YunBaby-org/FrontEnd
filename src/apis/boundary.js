@@ -79,7 +79,15 @@ export function AddBoundary(data){
     }
     return request(config)
 }
-
+export function DelBoundary(data){
+    let api_url = '/api/v1/resources/users/boundary'
+    let config = {
+        url:api_url,
+        method:'DELETE',
+        data
+    }
+    return request(config)
+}
 export function UpdateBoundary(data){
     let api_url = '/api/v1/resources/users/boundary'
     let config = {
