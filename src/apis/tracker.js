@@ -13,8 +13,14 @@ export function GetAllTrackers(){
 
 export function UpdateAllTrackers(store){
     GetAllTrackers().then(res=>{
-        store.dispatch("trackers/UpdateTrackers",res.data['trackers'])
-        store.dispatch("trackers/UpdateIdMap",res.data['trackers'])
+        if(res.data['trackers']){
+            store.dispatch("trackers/UpdateTrackers",res.data['trackers'])
+            store.dispatch("trackers/UpdateIdMap",res.data['trackers'])
+        }
+        else{
+            store.dispatch("trackers/UpdateTrackers",{})
+            store.dispatch("trackers/UpdateIdMap",{})
+        }
     }).catch(err=>{
         console.log('-------Get all trackers Error-------')
         console.log(err)
