@@ -55,7 +55,7 @@
     </div>
 
     <el-row>
-      <el-button type="primary" style="width:100%; margin-bottom:10px;margin-top:10px;" @click="StartTracking">開啟追蹤</el-button>
+      <el-button :type="trakcer_btn_type" :disabled="select_value===''" style="width:100%; margin-bottom:10px;margin-top:10px;" @click="tracker_btn_function">{{tracking_btn_text[tracking_btn_status]}}</el-button>
     </el-row>
   
     <GmapMap
@@ -119,9 +119,10 @@
 
 <script>
   import {gmapApi} from 'vue2-google-maps'
+  import webstomp from 'webstomp-client'
   import {GetBoundaryPosition} from '@/apis/boundary.js'
   import {SendToPhone} from '@/apis/phone.js'
-  import {CreateStompClient} from '@/utils/stompclient.js'
+
 
   export default {
     computed:{
@@ -139,6 +140,19 @@
       /*  get current tracker */ 
       tracker:function(){
         return this.$store.getters.trackersInfo[this.select_value] 
+      },
+      tracker_btn_function:function(){
+        if (this.tracking_btn_status ===0)
+          return this.StartTracking
+
+        return this.StopTracking
+
+      },
+      trakcer_btn_type:function(){
+        if(this.tracking_btn_status === 0)
+          return "primary"
+        
+        return "danger"
       }
     },
     data() {
@@ -157,8 +171,13 @@
         markers:null,
         roads:[],
 
+        /*  開關參數  */
         auto_report:true,//自動回報開關
         power_mode:false,//省電模式開關
+
+        /* tracking button 參數 */
+        tracking_btn_text:{0:"開啟追蹤",1:"停止追蹤"},
+        tracking_btn_status:0//0--->start tracking  1--->stop tracking
       }
     },
     methods:{
@@ -190,12 +209,7 @@
         console.log('selection change')
 
         /*  每次切換追蹤目標時 取消訂閱上個追蹤者 */
-        if(this.stomp_client&&this.subscribe_id){
-          this.stomp_client.unsubscribe(this.subscribe_id)
-          this.target = null 
-          this.map_default_center.lat = 23.696413
-          this.map_default_center.lng = 120.532343
-        }
+        this.StopTracking()
 
 
         /*  function parms is trakcer id (mode_num=1,get current boundary)*/
@@ -212,22 +226,50 @@
         /*  marker infowindow close event */
         this.info_window = false
       },
-
+      /*  tracking function */
       StartTracking:function(){
         /*subscribe tracker-event(exchange)*/
-        console.log(this.stomp_client)
+        console.log("START TRACKING")
+        this.tracking_btn_status = 1
         let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
         let retv = this.stomp_client.subscribe(destination,this.on_message)
         this.subscribe_id = retv.id 
         console.log('subscribe id is ',this.subscribe_id)
  
       },
+      StopTracking:function(){
+        console.log("STOP TRACKING "+this.subscribe_id)
+        this.tracking_btn_status = 0
+        if(this.stomp_client&&this.subscribe_id){
+          this.stomp_client.unsubscribe(this.subscribe_id)
+          this.target = null 
+          this.map_default_center.lat = 23.696413
+          this.map_default_center.lng = 120.532343
+        }
+      },
+      /*  stomp function  */
+      StompCreate:function(){
+        this.stomp_client = webstomp.over(new WebSocket('ws://'+location.hostname+':15674/ws'))
+        this.stomp_client.connect(process.env.VUE_APP_AMQP_USER,process.env.VUE_APP_AMQP_PASSWORD,this.StompSuccessCallback,this.StompFailureCallback)
+      },
+      /*  stomp callback  */
+      StompSuccessCallback:function(){
+        console.log("STOMP SUCCESS CALLBACK")
 
-      /*  stomp on_message callback */
-      on_message:function(msg){
-        console.log('message is '+msg.body)
+        if(this.select_value!==''&&this.tracking_btn_status===1){//代表有選擇AND有按下追蹤按鈕
+          let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
+          let retv = this.stomp_client.subscribe(destination,this.on_message)
+          this.subscribe_id = retv.id 
+          console.log("RESUBSCRIBE")
+        }
+      },
+      StompFailureCallback:function(error){
+        console.log("STOMP FAILURE CALLBACK "+error)
+        setTimeout(this.StompCreate,10000)//重新建立STOMP連線
+        console.log("STOMP: AUTO　RECONNECT IN 10s")
+      },
+      StompMessageCallback:function(msg){
         let retv = JSON.parse(msg.body)
-
         switch (retv.Response){
           case 'GetPowerStatus':
             console.log('GetPowerStatus Response')
@@ -251,21 +293,11 @@
         }
       },
 
+
     },
     created(){
       /*  create stomp connection */ 
-      this.stomp_client = CreateStompClient()
+      this.StompCreate()
     }
   }
 </script>
-<style scoped>
-  .mymap{
-    width: 85%;
-    height: 700px;
-  }
-  .color-mark{
-    width: 30%;
-    margin-bottom: 15px;
-    
-  }
-</style>
