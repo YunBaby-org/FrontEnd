@@ -19,10 +19,11 @@
       </el-option>
     </el-select>
 
-    <div v-if="select_value!==''">
-      <transition appear enter-active-class="animate__animated animate__fadeInTopLeft"  mode="out-in">
-          <div>
-          <el-row type="flex" style="margin-bottom:10px;">
+    <div v-if="select_value!==''" style="margin-bottom:5px;">
+      <transition name="el-zoom-in-top">
+        <el-card shadow="hover">
+   
+          <el-row type="flex" style="margin-bottom:5px;">
             <el-col>
               <el-switch
                 @change="SendRequest('SetAutoReport')"
@@ -45,19 +46,21 @@
             </el-col>
           </el-row>
 
-          <el-row>
-            <el-button @click='SendRequest("GetPowerStatus")' type="primary" >目標手機電力 {{target_power}}%</el-button>
-            <el-button @click='SendRequest("ScanWifiSignal")' type="primary" >啟用wifi定位</el-button>
-            <el-button @click='SendRequest("ScanGPS")' type="primary" >啟用GPS定位</el-button>
+          <el-row type="flex" class="row-bg" :gutter="10">
+            <el-col :span="8"><el-button @click='SendRequest("GetPowerStatus")' type="info" style="width:100%;">目標手機電力 {{target_power}}%</el-button></el-col>
+            <el-col :span="8"><el-button @click='SendRequest("ScanWifiSignal")' type="info" style="width:100%;">啟用wifi定位</el-button></el-col>
+            <el-col :span="8"><el-button @click='SendRequest("ScanGPS")' type="info" style="width:100%;">啟用GPS定位</el-button></el-col>
           </el-row>
-          </div>
+          <el-row>
+            <el-button :type="trakcer_btn_type" :disabled="select_value===''" style="width:100%;margin-top:5px;" @click="tracker_btn_function">{{tracking_btn_text[tracking_btn_status]}}</el-button>
+          </el-row>
+          <el-row>
+            <el-button  style="width:100%;margin-top:5px;" @click="ClearPolyline()" >清除軌跡</el-button>
+          </el-row>  
+        </el-card>
       </transition>
     </div>
 
-    <el-row>
-      <el-button :type="trakcer_btn_type" :disabled="select_value===''" style="width:100%; margin-bottom:10px;margin-top:10px;" @click="tracker_btn_function">{{tracking_btn_text[tracking_btn_status]}}</el-button>
-    </el-row>
-  
     <GmapMap
       ref="map"
       :center="map_default_center"
@@ -90,7 +93,7 @@
           :radius="boundary_radius">
         </GmapCircle>
 
-        <!-- <GmapPolyline 
+        <GmapPolyline 
             :path="roads"
             v-bind:options="{ 
               strokeColor:'#00ff00',
@@ -98,7 +101,6 @@
               strokeOpacity:0.8,
               icons:[{
                 icon:{
-                  path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                   fillColor: '#22bf15',
                   strokeColor: '#22bf15',
                   scale:4,
@@ -107,7 +109,7 @@
                   
                 }]
               }">
-        </GmapPolyline> -->
+        </GmapPolyline>
 
 
     </GmapMap>
@@ -181,6 +183,9 @@
       }
     },
     methods:{
+      ClearPolyline:function(){
+        this.roads = []
+      },
       /* 傳送命令------->Rest---------->手機 */
       SendRequest:function(action){
         let data = {"Request":action,"tracker_id":this.tracker_map[this.select_value]}
@@ -232,7 +237,7 @@
         console.log("START TRACKING")
         this.tracking_btn_status = 1
         let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
-        let retv = this.stomp_client.subscribe(destination,this.on_message)
+        let retv = this.stomp_client.subscribe(destination,this.StompMessageCallback)
         this.subscribe_id = retv.id 
         console.log('subscribe id is ',this.subscribe_id)
  
@@ -258,7 +263,7 @@
 
         if(this.select_value!==''&&this.tracking_btn_status===1){//代表有選擇AND有按下追蹤按鈕
           let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
-          let retv = this.stomp_client.subscribe(destination,this.on_message)
+          let retv = this.stomp_client.subscribe(destination,this.StompMessageCallback)
           this.subscribe_id = retv.id 
           console.log("RESUBSCRIBE")
         }
@@ -286,6 +291,8 @@
             this.target = {"lat":retv.Result.Latitude,"lng":retv.Result.Longitude}
             this.map_default_center.lat = retv.Result.Latitude
             this.map_default_center.lng = retv.Result.Longitude
+            this.roads.push(this.target)
+            /* update polyline */
             break;
           case 'ScanWifiSignal':
             console.log('ScanWifiSignal Response')

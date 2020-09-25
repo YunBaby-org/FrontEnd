@@ -1,6 +1,6 @@
 <template>
     <div>
-        <transition appear enter-active-class="animate__animated animate__fadeInTopLeft"  mode="out-in">
+        <el-collapse-transition>
             <el-card shadow="hover" id="tracker_table" :key="title">
                 <div slot="header" style="text-align:center;">
                     <h1>{{title}}的所有圍籬</h1>
@@ -35,7 +35,8 @@
 
                 </el-table>
             </el-card>
-        </transition>
+        </el-collapse-transition>
+     
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <div v-if="dialog_mode!==0">
                 <el-input-number v-model="dialog_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
