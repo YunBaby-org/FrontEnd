@@ -113,7 +113,7 @@ export default {
             let minute = t.getMinutes()<10?('0'+t.getMinutes()):t.getMinutes()
             let second = t.getSeconds()<10?('0'+t.getSeconds()):t.getSeconds()
             //2020-09-16 00:00:00
-            return year+'-'+month+'-'+date+' '+hour+':'+minute+':'+second 
+            return year+'-'+month+'-'+date+' '+hour+':'+minute+':'+second+'+0800'
         },
         Change:function(index, row){/*  change boundary button  */
             this.dialog_mode = 1 
