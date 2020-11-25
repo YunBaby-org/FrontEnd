@@ -39,7 +39,14 @@
      
         <el-dialog title="設置電子圍籬" :visible.sync="dialog_boundary" width="85%" @close="DialogClose">
             <div v-if="dialog_mode!==0">
-                <el-input-number v-model="dialog_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px; width:100%;"></el-input-number>
+                <gmap-autocomplete 
+                    style="width:95%;height:30px;border:0px #ccc solid;border-radius:10px;margin-bottom:10px;" 
+                    :options="{fields: ['geometry']}"
+                    class="pac-container" 
+                    placeholder="請輸入地址" 
+                    @place_changed="setPlace">
+                </gmap-autocomplete>
+                <el-input-number v-model="dialog_marker_radius" placeholder="請輸入電子圍籬半徑" style="margin-bottom:5px;margin-top:35px; width:100%;"></el-input-number>
 
                 <el-date-picker
                     size="mini"
@@ -54,12 +61,13 @@
                 <el-button v-if="dialog_mode===1" type="primary" @click="BoundaryAction(1)" style="margin-bottom:5px; width:100%;">更新</el-button>
                 <el-button v-else type="info" @click="BoundaryAction(2)" style="margin-bottom:5px; width:100%;">新增</el-button>
             </div>
+
             <GmapMap
                 ref="map"
                 @click="ClickEvent"
                 :zoom="15" 
                 :center="map_default_center"
-                style="width: 100%; height:700px">
+                style="width: 100%; height:700px;margin-top:10px;">
 
                 <div>
                     <GmapMarker
@@ -105,6 +113,10 @@ export default {
         boundarylist:Array
     },
     methods:{
+        setPlace:function(place){
+            this.map_default_center.lat = place.geometry.location.lat()
+            this.map_default_center.lng = place.geometry.location.lng()
+        },
         FormatTime:function(t){
             let year = t.getFullYear()
             let month = t.getMonth()+1
@@ -167,6 +179,7 @@ export default {
                 }
                 /*  會移動到所點的位置   */
                 map.panTo(click_position)
+                console.log(click_position)
                 this.dialog_marker_clicked = true 
                 this.dialog_marker = click_position
             })
@@ -222,5 +235,7 @@ export default {
     font-family: Microsoft YaHei;
     color: #2c3e50;
   }
-
+  .pac-container {
+    z-index: 9999;
+   }
 </style>

@@ -60,7 +60,13 @@
         </el-card>
       </transition>
     </div>
-
+    <gmap-autocomplete 
+      style="width:100%;height:30px;border:0px #ccc solid;border-radius:10px;margin-bottom:10px;" 
+      :options="{fields: ['geometry']}"
+      class="introInput" 
+      placeholder="請輸入地址" 
+      @place_changed="setPlace">
+    </gmap-autocomplete>
     <GmapMap
       ref="map"
       :center="map_default_center"
@@ -183,6 +189,10 @@
       }
     },
     methods:{
+      setPlace:function(place){
+        this.map_default_center.lat = place.geometry.location.lat()
+        this.map_default_center.lng = place.geometry.location.lng()
+      },
       ClearPolyline:function(){
         this.roads = []
       },
