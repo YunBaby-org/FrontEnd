@@ -8,8 +8,6 @@
       </el-row>
 
     </div>
-
-
     <el-select placeholder="目標" v-model="select_value" @change="SelectChange" style="width:100%; margin-bottom:10px;">
       <el-option
         v-for="(m,index) in tracker_list"
@@ -61,7 +59,7 @@
       </transition>
     </div>
     <gmap-autocomplete 
-      style="width:100%;height:30px;border:0px #ccc solid;border-radius:10px;margin-bottom:10px;" 
+      style="width:100%;height:30px;border:1px #ccc solid;border-radius:10px;margin-bottom:10px;" 
       :options="{fields: ['geometry']}"
       class="introInput" 
       placeholder="請輸入地址" 
@@ -175,6 +173,7 @@
 
         stomp_client:null,//stomp connection 
         subscribe_id:null,//stomp current subscription's id
+        subscribe_id2:null,//stomp subscription's id (from boundary monitor)
 
         markers:null,
         roads:[],
@@ -236,37 +235,46 @@
         })
       },
 
-      
       InfoWindowClose:function(){
         /*  marker infowindow close event */
         this.info_window = false
       },
+
       /*  tracking function */
       StartTracking:function(){
         /*subscribe tracker-event(exchange)*/
         console.log("START TRACKING")
         this.tracking_btn_status = 1
         let destination = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.respond`
+        let destination2 = `/exchange/tracker-event/tracker.${this.tracker_map[this.select_value]}.notification.escaped`
+
         let retv = this.stomp_client.subscribe(destination,this.StompMessageCallback)
+        let retv2 = this.stomp_client.subscribe(destination2,this.StompMessageCallback2)
         this.subscribe_id = retv.id 
-        console.log('subscribe id is ',this.subscribe_id)
+        this.subscribe_id2 = retv2.id  
+
  
       },
+
       StopTracking:function(){
         console.log("STOP TRACKING "+this.subscribe_id)
         this.tracking_btn_status = 0
         if(this.stomp_client&&this.subscribe_id){
           this.stomp_client.unsubscribe(this.subscribe_id)
+          this.stomp_client.unsubscribe(this.subscribe_id2)
+
           this.target = null 
           this.map_default_center.lat = 23.696413
           this.map_default_center.lng = 120.532343
         }
       },
+      
       /*  stomp function  */
       StompCreate:function(){
         this.stomp_client = webstomp.over(new WebSocket('ws://'+location.hostname+':15674/ws'))
         this.stomp_client.connect(process.env.VUE_APP_AMQP_USER,process.env.VUE_APP_AMQP_PASSWORD,this.StompSuccessCallback,this.StompFailureCallback)
       },
+
       /*  stomp callback  */
       StompSuccessCallback:function(){
         console.log("STOMP SUCCESS CALLBACK")
@@ -278,12 +286,23 @@
           console.log("RESUBSCRIBE")
         }
       },
+
       StompFailureCallback:function(error){
         console.log("STOMP FAILURE CALLBACK "+error)
         setTimeout(this.StompCreate,10000)//重新建立STOMP連線
         console.log("STOMP: AUTO　RECONNECT IN 10s")
       },
-      StompMessageCallback:function(msg){
+
+      StompMessageCallback2:function(msg){  /* escaped notification from Boundary Monitor */
+        console.log('from boundary monitor ' + msg.body)
+        this.$message({
+          showClose:true,
+          message:msg.body,
+          type:'warning'
+        })
+      },
+
+      StompMessageCallback:function(msg){ /* GPS data from response monitor */
         let retv = JSON.parse(msg.body)
         switch (retv.Response){
           case 'GetPowerStatus':
@@ -318,3 +337,9 @@
     }
   }
 </script>
+<style>
+
+  .pac-container {
+    z-index: 9999;
+   }
+</style>

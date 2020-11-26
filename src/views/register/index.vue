@@ -4,25 +4,25 @@
             <div class="title-container">
                 <h3 class="title">註冊帳號</h3>
             </div>
+            <div class="test">
+              <el-form-item label="信箱">
+                  <el-input v-model="RegisterForm.email" placeholder="請輸入欲註冊之信箱"></el-input>
+              </el-form-item>
 
-            <el-form-item label="信箱">
-                <el-input v-model="RegisterForm.email"></el-input>
-            </el-form-item>
+              <el-form-item label="密碼">
+                  <el-input type="password" v-model="RegisterForm.password" placeholder="請輸入欲註冊之密碼"></el-input>
+              </el-form-item>
+              
+              <el-form-item label="使用者名稱">
+                  <el-input v-model="RegisterForm.username" placeholder="請輸入欲註冊之使用者名稱"></el-input>
+              </el-form-item>
 
-            <el-form-item label="密碼">
-                <el-input type="password" v-model="RegisterForm.password"></el-input>
-            </el-form-item>
-            
-            <el-form-item label="使用者名稱">
-                <el-input v-model="RegisterForm.username"></el-input>
-            </el-form-item>
-
-            <el-form-item label="手機">
-                <el-input v-model="RegisterForm.phone"></el-input>
-            </el-form-item>
-            
-            <el-button v-loading.fullscreen.lock="fullscreenLoading" style="width:100%; margin-top:20px;" @click="HandleRegister">註冊</el-button>
-           
+              <el-form-item label="手機">
+                  <el-input v-model="RegisterForm.phone" placeholder="請輸入欲註冊之手機號碼"></el-input>
+              </el-form-item>
+              
+              <el-button v-loading.fullscreen.lock="fullscreenLoading" style="width:100%; margin-top:20px;background-color:#337ab7;color:white;font-size:16px;" @click="HandleRegister">註冊</el-button>
+            </div>
             
         </el-form>
     </div>
@@ -94,11 +94,15 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .register-container {
+  background: url('../../assets/yuntech3.jpg') #132533  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
   .el-input {
     display: inline-block;
     height: 47px;
     width: 100%;
- 
+    background: rgba(0, 0, 0, 0.7);
     input {
       background: rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -122,6 +126,9 @@ $cursor: #fff;
     
     color: #454545;
   
+  }
+  .el-form-item__label{
+    color: white;
   }
   .el-form-item__content{
     margin-left:0px !important;
@@ -176,8 +183,8 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
-      color: $light_gray;
+      font-size: 36px;
+      color: white;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
@@ -194,4 +201,12 @@ $light_gray:#eee;
     user-select: none;
   }
 }
+</style>
+<style>
+  .test{
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    padding: 5% 5% 10%;
+  }
 </style>

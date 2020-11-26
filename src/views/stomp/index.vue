@@ -8,12 +8,11 @@
         <el-button @click="test_axios2">test axios </el-button> -->
 
         <gmap-autocomplete 
-        style="width:100%;height:30px;border:2px #ccc solid;border-radius:10px;margin-bottom:10px;" 
-        :options="{fields: ['geometry']}"
-        class="introInput" 
-        placeholder="請輸入地址" 
-        @place_changed="setPlace">
-
+            style="width:100%;height:30px;border:2px #ccc solid;border-radius:10px;margin-bottom:10px;" 
+            :options="{fields: ['geometry']}"
+            class="introInput" 
+            placeholder="請輸入地址" 
+            @place_changed="setPlace">
         </gmap-autocomplete>
         <GmapMap
             :center="map_default_center"

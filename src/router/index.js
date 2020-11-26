@@ -13,18 +13,6 @@ Vue.use(VueRouter)
 
   },
   {
-    path:'/home',
-    component:Layout,
-    children:[
-      {
-        path:'index',
-        name:'Home',
-        component:()=>import('@/views/home/index')
-      }
-    ],
-    meta: { title: '首頁', icon: 'el-icon-s-home' },
-  },
-  {
     path:'/setting',
     component:Layout,
     children:[
@@ -69,18 +57,6 @@ Vue.use(VueRouter)
         path:'index',
         name:'Boundary',
         component:()=>import('@/views/boundary/index.vue')
-      }
-    ]
-  },
-  {
-    path:'/stomp',
-    component:Layout,
-    meta:{title:'測試',icon:'el-icon-plus'},
-    children:[
-      {
-        path:'index',
-        name:'Stomp',
-        component:()=>import('@/views/stomp/index.vue')
       }
     ]
   },

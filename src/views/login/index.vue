@@ -3,29 +3,30 @@
         <el-form ref="loginForm" :model="LoginInfo" :rules="LoginRules" class="login-form"  label-width="80px" auto-complete="on" label-position="left">
             <div class="title-container">
                 <h3 class="title">
-                    使用者登入
+                    失智長輩追蹤與協尋關懷系統
                 </h3>
             </div>
+            <div class="test">
+              <!-- email -->
+              <el-form-item  prop="email">
+                  <span class="svg-container">
+                      <i class="el-icon-user"></i>
+                  </span>
 
-            <!-- email -->
-            <el-form-item  prop="email">
-                <span class="svg-container">
-                    <i class="el-icon-user"></i>
-                </span>
+                  <el-input v-model="LoginInfo.email" placeholder="請輸入您的信箱"></el-input>
+              </el-form-item>
 
-                <el-input v-model="LoginInfo.email" placeholder="請輸入您的信箱"></el-input>
-            </el-form-item>
-
-            <!-- password -->
-            <el-form-item prop="password">
-                <span class="svg-container">
-                    <i class="el-icon-lock"></i>
-                </span>
-                <el-input type="password" v-model="LoginInfo.password" placeholder="請輸入您的密碼"></el-input>
-            </el-form-item>
-            <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="HandleLogin" style="width:100%; margin-top:20px;">登入</el-button>
-            <div class="tips" style="width:100%;text-align:center; margin-top:30px;">
-                <router-link to="register">註冊帳號</router-link>
+              <!-- password -->
+              <el-form-item prop="password">
+                  <span class="svg-container">
+                      <i class="el-icon-lock"></i>
+                  </span>
+                  <el-input type="password" v-model="LoginInfo.password" placeholder="請輸入您的密碼"></el-input>
+              </el-form-item>
+              <el-button v-loading.fullscreen.lock="fullscreenLoading" @click="HandleLogin" style="width:100%; margin-top:20px;background-color:#337ab7;color:white;font-size:16px;">登入</el-button>
+              <div class="tips" style="width:100%;text-align:center; margin-top:30px; font-size:16px;">
+                  <router-link to="register">註冊帳號</router-link>
+              </div>
             </div>
         </el-form>
     </div>
@@ -115,7 +116,16 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background: url('../../assets/yuntech3.jpg') #132533  no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+  background-size: cover;
+  height: 100vh;
+
   .el-input {
+    
     display: inline-block;
     height: 47px;
     width: 85%;
@@ -139,7 +149,7 @@ $cursor: #fff;
 
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 5px;
     color: #454545;
   
@@ -154,25 +164,26 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray:white;
 
 .login-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
-
+  font-size: 16px;
   .login-form {
     position: relative;
-    width: 520px;
+    width: 800px;
     max-width: 100%;
     padding: 160px 35px 0;
     margin: 0 auto;
     overflow: hidden;
+  
   }
 
   .tips {
-    font-size: 14px;
+    font-size: 16px;
     color: #fff;
     margin-bottom: 10px;
 
@@ -195,7 +206,7 @@ $light_gray:#eee;
     position: relative;
 
     .title {
-      font-size: 26px;
+      font-size: 36px;
       color: $light_gray;
       margin: 0px auto 40px auto;
       text-align: center;
@@ -213,4 +224,13 @@ $light_gray:#eee;
     user-select: none;
   }
 }
+</style>
+<style>
+  .test{
+    background: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+ 
+    padding: 5% 5% 10%;
+  }
 </style>
