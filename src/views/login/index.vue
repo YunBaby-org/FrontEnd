@@ -79,7 +79,7 @@ export default {
 
         this.$message('登入成功!')
         this.fullscreenLoading = false
-        this.$router.push('/home/index')
+        this.$router.push('/setting/index')
       }).catch(err=>{
         console.log('login error catch ')
         console.log(err.response)
